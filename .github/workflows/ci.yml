@@ -1,0 +1,55 @@
+name: CI
+
+# Runs on every push/PR touching main. Root package.json (npm workspaces:
+# apps/web landing page, apps/desktop Electron product) exposes "lint",
+# "typecheck", "test", and "build" scripts that delegate to apps/desktop.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build & test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint --if-present
+
+      - name: Type check
+        run: npm run typecheck --if-present
+
+      - name: Unit tests
+        run: npm test --if-present
+
+      - name: Build web + desktop bundles
+        run: npm run build --if-present
+
+      - name: Package desktop smoke build (no publish)
+        run: npx --yes electron-builder --dir
+        working-directory: apps/desktop
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: false
