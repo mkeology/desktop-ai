@@ -59,7 +59,9 @@ CI (`.github/workflows/ci.yml`) runs all of these plus a packaging smoke build o
 
 ## Releasing
 
-Push a `v*.*.*` tag (e.g. `v0.1.0`) — `.github/workflows/release.yml` builds signed installers for Windows, macOS, and Linux and publishes them as GitHub Release assets. See [DevOps & Release](./docs/specs/07-devops-release.md) for what "signed" requires (secrets) and how auto-update works.
+Go to the **Actions** tab → **Tag & Release** → **Run workflow** (from `main`, pick patch/minor/major). It bumps the version, tags it, and builds + publishes signed installers for Windows, macOS, and Linux as a GitHub Release — one click, no manual tagging.
+
+(Pushing a `v*.*.*` tag yourself also works, via `.github/workflows/release.yml`, as a manual fallback.) See [DevOps & Release](./docs/specs/07-devops-release.md) for what "signed" requires (secrets) and how auto-update works.
 
 ## Updating (once installed)
 

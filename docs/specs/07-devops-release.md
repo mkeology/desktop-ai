@@ -7,19 +7,23 @@
 ```mermaid
 flowchart LR
     PR[Push / PR to main] --> CI[ci.yml\nlint, typecheck, test, build,\npackage smoke build x3 OS]
-    Tag["Tag push v*.*.*"] --> REL[release.yml\nbuild + sign + publish\ninstallers x3 OS]
-    REL --> GH[GitHub Release]
+    Dispatch["Run 'Tag & Release'\n(from main, pick patch/minor/major)"] --> TAG[tag-release.yml: tag job\nbump version, commit, tag]
+    TAG --> RELJOB[tag-release.yml: release job\nbuild + sign + publish x3 OS]
+    ManualTag["Tag push v*.*.* (pushed by a person)"] --> REL[release.yml\nbuild + sign + publish\ninstallers x3 OS]
+    RELJOB --> GH[GitHub Release]
+    REL --> GH
     GH --> Updater[electron-updater\nfeed]
 ```
 
 - **`ci.yml`** — every push/PR to `main`: lint, typecheck, unit tests, build, and an electron-builder `--dir` smoke package on Ubuntu, macOS, and Windows. Must stay green; it's the only gate before merge.
-- **`release.yml`** — triggered by pushing a `v*.*.*` tag: builds and publishes signed installers for all three OSes to a GitHub Release via electron-builder's `--publish always`.
+- **`tag-release.yml`** — the normal way to cut a release: trigger it manually (Actions tab → "Tag & Release" → Run workflow, from `main`, choosing a patch/minor/major bump). It bumps `apps/desktop/package.json`, commits that to `main`, tags it, then builds and publishes installers for all three OSes in the same run.
+- **`release.yml`** — a fallback: if a person pushes a `v*.*.*` tag themselves (with their own git credentials), this builds and publishes for all three OSes the same way. Exists because a tag/commit pushed *by* a workflow using the default `GITHUB_TOKEN` deliberately does not re-trigger other workflows (GitHub's loop prevention) — so `tag-release.yml` can't just push a tag and rely on this one to pick it up; it does the release itself.
 - The landing page (`apps/web`) has **no packaging/signing step** — it deploys as a normal site once a hosting target is chosen (not decided yet, see [Product Vision](./01-product-vision.md)).
 
 ## Versioning
 
-- SemVer (`MAJOR.MINOR.PATCH`), bumped in `apps/desktop/package.json`.
-- A release is a git tag `vX.Y.Z` on `main`; the tag is what triggers `release.yml`.
+- SemVer (`MAJOR.MINOR.PATCH`), bumped in `apps/desktop/package.json` — normally by running **Tag & Release** (`tag-release.yml`) rather than by hand.
+- A release is a git tag `vX.Y.Z` on `main`.
 - Every release gets an entry in [Features & Changelog](./02-features-and-changelog.md) before or in the same change as the tag.
 
 ## Installation must be really easy — packaging requirements

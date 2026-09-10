@@ -52,6 +52,8 @@ Format: [Keep a Changelog](https://keepachangelog.com/) style, [SemVer](https://
 
 ```
 ## [Unreleased]
+
+## [0.0.1] - 2026-09-10
 ### Added
 - Desktop app skeleton: Electron + React + TypeScript shell with sidebar,
   session tabs, native application menu, and a light/dark theme system
@@ -74,6 +76,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/) style, [SemVer](https://
   site in an isolated, persistent browser view on the right — not a
   placeholder. Each provider gets its own storage, separate from every
   other provider and from the app itself.
+- CI/CD: automated GitHub Actions pipeline to lint/test/build every change,
+  plus a one-click way to cut a signed release for Windows, macOS, and
+  Linux from `main`.
 ```
 
 > Agents: when a release ships, add an entry above following this template:
