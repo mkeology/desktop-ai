@@ -21,8 +21,8 @@ Status values: `Planned` · `In Progress` · `Shipped`.
 | Isolated per-account profiles (`session.fromPartition`) | Shipped — one partition per (provider, account); real web pages load unmodified in their own `WebContentsView`, verified against a live provider site |
 | Multiple accounts of the same provider | Planned — `accountId` is hardcoded to `"default"` until account-management UI exists |
 | Split-screen / drag-resize panes | Planned |
-| One-click installers, no config (Windows/macOS/Linux) | In Progress — electron-builder configured & smoke-tested unsigned on macOS; signing/notarization untested |
-| Automatic background updates | In Progress — `electron-updater` wired to check on launch in production builds; no published feed yet |
+| One-click installers, no config (Windows/macOS/Linux) | Shipped — real GitHub Release with installers for all 3 OSes (`v0.0.2`); **unsigned** (no code-signing cert configured yet, see [Security](./06-security.md)) |
+| Automatic background updates | In Progress — `electron-updater` wired to check on launch, and the update feed (`latest*.yml`) is now published with each release; an older client actually picking up an update hasn't been end-to-end verified yet |
 
 ### Phase 2 — AI-specific layer
 
@@ -53,32 +53,45 @@ Format: [Keep a Changelog](https://keepachangelog.com/) style, [SemVer](https://
 ```
 ## [Unreleased]
 
-## [0.0.1] - 2026-09-10
+## [0.0.2] - 2026-09-10
 ### Added
 - Desktop app skeleton: Electron + React + TypeScript shell with sidebar,
   session tabs, native application menu, and a light/dark theme system
   (Tailwind + DaisyUI). Sessions open as placeholder panels — no real
   provider logins, API calls, or terminals yet.
 - Sidebar redesigned as a searchable, collapsible panel: one search box
-  filters three expandable sections (Web/API/Terminal), and a bottom menu
-  opens Settings and the light/dark switch.
+  filters four expandable sections (AI Web Session/Web Apps/API/Terminal),
+  and a bottom menu opens Settings and the light/dark switch.
 - Settings window with corporate proxy configuration (HTTP proxy, HTTPS
   proxy, no-proxy list), applied immediately and re-applied on every launch.
 - Added DeepSeek, Moonshot (Kimi), GitHub Copilot, and Mistral to the
-  built-in AI Providers catalog.
-- Split the sidebar's web catalog into **AI Providers** and **Web Apps** —
-  an AI provider (Gemini) and a general web app (Gmail) are no longer
-  lumped into one list.
+  built-in AI Web Session catalog.
+- Split the sidebar's web catalog into **AI Web Session** and **Web
+  Apps** — an AI provider (Gemini) and a general web app (Gmail) are no
+  longer lumped into one list.
 - The Web Apps catalog is now user-extensible: "+ Add website" registers
   any URL, persisted locally and removable.
-- Renamed the sidebar's "AI Providers" section to "AI Web Session".
 - Web sessions now open for real: clicking a provider loads its actual
   site in an isolated, persistent browser view on the right — not a
   placeholder. Each provider gets its own storage, separate from every
   other provider and from the app itself.
-- CI/CD: automated GitHub Actions pipeline to lint/test/build every change,
-  plus a one-click way to cut a signed release for Windows, macOS, and
-  Linux from `main`.
+- CI/CD: automated GitHub Actions pipeline that lints/tests/builds every
+  change, plus a two-step release flow (Propose Release opens a
+  version-bump PR; merging it tags and publishes signed installers for
+  Windows, macOS, and Linux).
+
+### Fixed
+- Several release-pipeline issues found only by actually running a real
+  release end-to-end: a missing `repository` field that broke
+  electron-builder's CI detection on every OS; an empty (unset-secret)
+  `CSC_LINK` crashing macOS signing instead of skipping it; the Linux
+  `.deb` target's maintainer requirement; `npm version`'s own stdout
+  noise corrupting a captured version string; a stale lockfile version;
+  and electron-builder silently skipping publish because the release job
+  runs under a `pull_request` event.
+
+**Note:** `0.0.1` was never published as a release — it was superseded by
+this version during the pipeline fixes above before anyone downloaded it.
 ```
 
 > Agents: when a release ships, add an entry above following this template:
