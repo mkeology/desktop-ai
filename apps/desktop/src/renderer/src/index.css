@@ -1,0 +1,14 @@
+@import 'tailwindcss';
+
+/* DaisyUI v5 as a Tailwind v4 plugin. `light` is the default theme; `dark`
+   activates automatically via prefers-color-scheme, and App.tsx's manual
+   toggle overrides either by writing data-theme directly on <html>. */
+@plugin 'daisyui' {
+  themes: light --default, dark --prefersdark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}

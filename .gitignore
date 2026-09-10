@@ -141,3 +141,16 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# electron-builder output
+release/
+*.dmg
+*.exe
+*.AppImage
+*.snap
+*.deb
+*.rpm
+*.blockmap
+
+*.env
+*.spec
