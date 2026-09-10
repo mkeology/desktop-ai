@@ -7,23 +7,28 @@
 ```mermaid
 flowchart LR
     PR[Push / PR to main] --> CI[ci.yml\nlint, typecheck, test, build,\npackage smoke build x3 OS]
-    Dispatch["Run 'Tag & Release'\n(from main, pick patch/minor/major)"] --> TAG[tag-release.yml: tag job\nbump version, commit, tag]
-    TAG --> RELJOB[tag-release.yml: release job\nbuild + sign + publish x3 OS]
+    Dispatch["Run 'Propose Release'\n(from main, pick patch/minor/major)"] --> PROPOSE[propose-release.yml\nbump version on release/vX.Y.Z,\nopen PR against main]
+    PROPOSE --> HumanReview{{"Human reviews\n& merges the PR"}}
+    HumanReview --> FINALIZE[finalize-release.yml\ntag the merge commit,\nbuild + sign + publish x3 OS]
     ManualTag["Tag push v*.*.* (pushed by a person)"] --> REL[release.yml\nbuild + sign + publish\ninstallers x3 OS]
-    RELJOB --> GH[GitHub Release]
+    FINALIZE --> GH[GitHub Release]
     REL --> GH
     GH --> Updater[electron-updater\nfeed]
 ```
 
-- **`ci.yml`** — every push/PR to `main`: lint, typecheck, unit tests, build, and an electron-builder `--dir` smoke package on Ubuntu, macOS, and Windows. Must stay green; it's the only gate before merge.
-- **`tag-release.yml`** — the normal way to cut a release: trigger it manually (Actions tab → "Tag & Release" → Run workflow, from `main`, choosing a patch/minor/major bump). It bumps `apps/desktop/package.json`, commits that to `main`, tags it, then builds and publishes installers for all three OSes in the same run.
-- **`release.yml`** — a fallback: if a person pushes a `v*.*.*` tag themselves (with their own git credentials), this builds and publishes for all three OSes the same way. Exists because a tag/commit pushed *by* a workflow using the default `GITHUB_TOKEN` deliberately does not re-trigger other workflows (GitHub's loop prevention) — so `tag-release.yml` can't just push a tag and rely on this one to pick it up; it does the release itself.
+Cutting a release is two steps, not one, because this repo requires every change to `main` to go through a reviewed pull request — a workflow can't just push a version-bump commit directly:
+
+- **`propose-release.yml`** — trigger it manually (Actions tab → "Propose Release" → Run workflow, from `main`, choosing a patch/minor/major bump). It bumps `apps/desktop/package.json` on a new `release/vX.Y.Z` branch and opens a PR against `main`.
+- **A human reviews and merges that PR** — same as any other change to `main`.
+- **`finalize-release.yml`** — runs automatically when a `release/*` PR merges into `main`: tags the merge commit and builds + publishes installers for all three OSes. This is unaffected by the "PR required" rule because that rule targets the `main` branch ref, not tag refs — a workflow pushing a *tag* is fine; pushing directly to the `main` *branch* is what's blocked.
+- **`ci.yml`** — every push/PR to `main`: lint, typecheck, unit tests, build, and an electron-builder `--dir` smoke package on Ubuntu, macOS, and Windows. Must stay green; it's the gate before any PR (including a release-bump PR) can merge.
+- **`release.yml`** — a fallback: if a person pushes a `v*.*.*` tag themselves (with their own git credentials) instead of going through `propose-release.yml`, this builds and publishes for all three OSes the same way `finalize-release.yml` does.
 - The landing page (`apps/web`) has **no packaging/signing step** — it deploys as a normal site once a hosting target is chosen (not decided yet, see [Product Vision](./01-product-vision.md)).
-- Every workflow declares an explicit, least-privilege `permissions:` block for its `GITHUB_TOKEN` rather than relying on the repository default — see [GitHub's guide](https://docs.github.com/en/actions/tutorials/authenticate-with-github_token). `ci.yml` only needs `contents: read`; `release.yml` and `tag-release.yml` need `contents: write` (pushing tags/commits, creating releases). None of them touch pull requests, so none declare `pull-requests: write`.
+- Every workflow declares an explicit, least-privilege `permissions:` block for its `GITHUB_TOKEN` rather than relying on the repository default — see [GitHub's guide](https://docs.github.com/en/actions/tutorials/authenticate-with-github_token). `ci.yml` needs only `contents: read`; `release.yml` and `finalize-release.yml` need `contents: write` (pushing tags, creating releases); `propose-release.yml` additionally needs `pull-requests: write` to open its PR.
 
 ## Versioning
 
-- SemVer (`MAJOR.MINOR.PATCH`), bumped in `apps/desktop/package.json` — normally by running **Tag & Release** (`tag-release.yml`) rather than by hand.
+- SemVer (`MAJOR.MINOR.PATCH`), bumped in `apps/desktop/package.json` — normally via **Propose Release** (`propose-release.yml`) rather than by hand.
 - A release is a git tag `vX.Y.Z` on `main`.
 - Every release gets an entry in [Features & Changelog](./02-features-and-changelog.md) before or in the same change as the tag.
 
