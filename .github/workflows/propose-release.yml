@@ -1,0 +1,81 @@
+name: Propose Release
+
+# Step 1 of 2 for cutting a release — see finalize-release.yml for step 2.
+# Manually triggered from main: bumps apps/desktop/package.json on a new
+# release/vX.Y.Z branch and opens a PR against main.
+#
+# This repo requires every change to main go through a reviewed PR, so this
+# workflow can't just push the bump directly. Once a human merges that PR,
+# finalize-release.yml tags the merge commit and builds + publishes
+# installers for Windows/macOS/Linux — tags aren't covered by that "PR
+# required" rule (it targets the main branch ref, not tag refs), so that
+# part stays fully automated.
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: "Version bump"
+        type: choice
+        options: [patch, minor, major]
+        default: patch
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  propose:
+    name: Open version-bump PR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Configure git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump version
+        id: bump
+        working-directory: apps/desktop
+        # Don't capture npm version's stdout for the tag value — this
+        # project's dependency tree makes npm print "npm warn deprecated
+        # ..." lines to stdout during the lockfile resolution it does,
+        # which corrupts a captured single-line value. Read the version
+        # back from package.json instead.
+        run: |
+          npm version "${{ inputs.bump }}" --no-git-tag-version --silent
+          NEW_VERSION="v$(node -p "require('./package.json').version")"
+          echo "tag=$NEW_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Resync root lockfile
+        # `npm version` run from inside apps/desktop only updates that
+        # workspace's own package.json — the root package-lock.json's
+        # cached copy of this workspace's version needs a separate sync.
+        run: npm install --package-lock-only
+
+      - name: Commit on a release branch
+        run: |
+          git checkout -b "release/${{ steps.bump.outputs.tag }}"
+          git add apps/desktop/package.json package-lock.json
+          git commit -m "chore(release): ${{ steps.bump.outputs.tag }}"
+          git push origin "release/${{ steps.bump.outputs.tag }}"
+
+      - name: Open PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr create \
+            --title "chore(release): ${{ steps.bump.outputs.tag }}" \
+            --body "Merging this tags and releases **${{ steps.bump.outputs.tag }}** for Windows/macOS/Linux — see \`.github/workflows/finalize-release.yml\`." \
+            --base main \
+            --head "release/${{ steps.bump.outputs.tag }}"
