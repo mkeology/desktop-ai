@@ -10,6 +10,13 @@ on:
   pull_request:
     branches: [main]
 
+# Explicit least-privilege GITHUB_TOKEN scope — see
+# https://docs.github.com/en/actions/tutorials/authenticate-with-github_token.
+# This workflow only reads the repo to lint/test/build; it never comments on
+# or writes to PRs, so contents: read is the full scope it needs.
+permissions:
+  contents: read
+
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true

@@ -19,6 +19,7 @@ flowchart LR
 - **`tag-release.yml`** — the normal way to cut a release: trigger it manually (Actions tab → "Tag & Release" → Run workflow, from `main`, choosing a patch/minor/major bump). It bumps `apps/desktop/package.json`, commits that to `main`, tags it, then builds and publishes installers for all three OSes in the same run.
 - **`release.yml`** — a fallback: if a person pushes a `v*.*.*` tag themselves (with their own git credentials), this builds and publishes for all three OSes the same way. Exists because a tag/commit pushed *by* a workflow using the default `GITHUB_TOKEN` deliberately does not re-trigger other workflows (GitHub's loop prevention) — so `tag-release.yml` can't just push a tag and rely on this one to pick it up; it does the release itself.
 - The landing page (`apps/web`) has **no packaging/signing step** — it deploys as a normal site once a hosting target is chosen (not decided yet, see [Product Vision](./01-product-vision.md)).
+- Every workflow declares an explicit, least-privilege `permissions:` block for its `GITHUB_TOKEN` rather than relying on the repository default — see [GitHub's guide](https://docs.github.com/en/actions/tutorials/authenticate-with-github_token). `ci.yml` only needs `contents: read`; `release.yml` and `tag-release.yml` need `contents: write` (pushing tags/commits, creating releases). None of them touch pull requests, so none declare `pull-requests: write`.
 
 ## Versioning
 
