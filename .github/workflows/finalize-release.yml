@@ -78,6 +78,14 @@ jobs:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          # This job runs from a `pull_request: closed` trigger, so
+          # electron-builder's CI detection sees GITHUB_EVENT_NAME=pull_request
+          # and silently skips publishing by default (a safety default meant
+          # for untrusted fork PR builds). The `if:` above already restricts
+          # this job to a merged release/* PR in our own repo, so overriding
+          # it here is safe — verified by watching v0.0.2 build successfully
+          # on all 3 OSes but publish nothing (no GitHub Release created).
+          PUBLISH_FOR_PULL_REQUEST: true
         # A missing secret still becomes a *defined but empty* env var here,
         # and electron-builder mishandles a defined-but-empty CSC_LINK as
         # "sign with this path", crashing with "not a file" — it has to be
