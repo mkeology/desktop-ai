@@ -3,7 +3,10 @@
   "version": "0.0.1",
   "description": "AI Workspace — isolated multi-account AI provider sessions, unified API chat, and terminal sessions in one desktop workspace.",
   "main": "./out/main/index.js",
-  "author": "AI Workspace",
+  "author": {
+    "name": "AI Workspace",
+    "email": "mkeology@users.noreply.github.com"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/mkeology/desktop-ai.git"
