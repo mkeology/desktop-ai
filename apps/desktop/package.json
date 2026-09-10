@@ -4,6 +4,10 @@
   "description": "AI Workspace — isolated multi-account AI provider sessions, unified API chat, and terminal sessions in one desktop workspace.",
   "main": "./out/main/index.js",
   "author": "AI Workspace",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mkeology/desktop-ai.git"
+  },
   "private": true,
   "scripts": {
     "dev": "electron-vite dev",
