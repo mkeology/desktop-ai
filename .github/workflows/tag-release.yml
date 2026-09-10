@@ -92,6 +92,7 @@ jobs:
 
       - name: Build & publish installers
         working-directory: apps/desktop
+        shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CSC_LINK: ${{ secrets.CSC_LINK }}
