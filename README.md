@@ -24,12 +24,29 @@ Every AI provider, one place, no compromise on isolation:
 
 <table>
 <tr>
-<td width="50%"><img src="docs/imgs/sidebar-light.png" alt="Sidebar in light theme showing AI providers, web apps, and terminal sections" /></td>
-<td width="50%"><img src="docs/imgs/sidebar-dark.png" alt="Sidebar in dark theme" /></td>
+<td width="50%"><img src="docs/imgs/app-light-full.png" alt="AI Workspace in light theme, sidebar expanded, a real local shell terminal open" /></td>
+<td width="50%"><img src="docs/imgs/app-dark-full.png" alt="AI Workspace in dark theme, sidebar expanded" /></td>
 </tr>
 <tr>
-<td width="50%"><img src="docs/imgs/terminal.png" alt="A real local shell terminal running alongside AI sessions" /></td>
-<td width="50%"><img src="docs/imgs/sidebar-collapsed.png" alt="Sidebar collapsed to an icon-only rail" /></td>
+<td width="50%"><img src="docs/imgs/app-dark-collapsed.png" alt="Sidebar collapsed to an icon-only rail" /></td>
+<td width="50%"><img src="docs/imgs/terminal-btop.png" alt="The real local shell terminal running btop" /></td>
+</tr>
+</table>
+
+Each provider is the real, unmodified site, isolated in its own session — sign in once and it's remembered, just like a real browser profile:
+
+<table>
+<tr>
+<td width="25%"><img src="docs/imgs/provider-chatgpt.png" alt="ChatGPT" /></td>
+<td width="25%"><img src="docs/imgs/provider-claude.png" alt="Claude" /></td>
+<td width="25%"><img src="docs/imgs/provider-gemini.png" alt="Gemini" /></td>
+<td width="25%"><img src="docs/imgs/provider-deepseek.png" alt="DeepSeek" /></td>
+</tr>
+<tr>
+<td width="25%"><img src="docs/imgs/provider-moonshot.png" alt="Moonshot Kimi" /></td>
+<td width="25%"><img src="docs/imgs/provider-copilot.png" alt="GitHub Copilot" /></td>
+<td width="25%"><img src="docs/imgs/provider-mistral.png" alt="Mistral Le Chat" /></td>
+<td width="25%"><img src="docs/imgs/provider-notion.png" alt="Notion" /></td>
 </tr>
 </table>
 
