@@ -15,7 +15,7 @@ interface WorkspaceState {
   toggleTheme: () => void
   toggleSidebar: () => void
   openWebSession: (providerId: string) => void
-  openApiSession: () => void
+  openApiSession: (providerId: string) => void
   openTerminalSession: () => void
   closeTab: (id: string) => void
   setActiveTab: (id: string) => void
@@ -59,8 +59,18 @@ export const useWorkspaceStore = create<WorkspaceState>()(
 
       toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
 
+      // Each of these opens at most one tab per provider — clicking an
+      // already-open item in the sidebar focuses it instead of stacking up
+      // duplicates. There's no separate tab strip; the sidebar itself shows
+      // which session is active (see Sidebar.tsx).
       openWebSession: (providerId) => {
-        const provider = [...PROVIDER_CATALOG, ...get().customProviders].find((p) => p.id === providerId)
+        const state = get()
+        const existing = state.tabs.find((t) => t.type === 'web' && t.providerId === providerId)
+        if (existing) {
+          set({ activeTabId: existing.id })
+          return
+        }
+        const provider = [...PROVIDER_CATALOG, ...state.customProviders].find((p) => p.id === providerId)
         if (!provider) return
         const newSession: WebSession = {
           id: nextId('web'),
@@ -71,22 +81,35 @@ export const useWorkspaceStore = create<WorkspaceState>()(
           accountId: 'default',
           url: provider.url
         }
-        set((state) => ({ tabs: [...state.tabs, newSession], activeTabId: newSession.id }))
+        set((s) => ({ tabs: [...s.tabs, newSession], activeTabId: newSession.id }))
       },
 
-      openApiSession: () => {
+      openApiSession: (providerId) => {
+        const state = get()
+        const existing = state.tabs.find((t) => t.type === 'api' && t.provider === providerId)
+        if (existing) {
+          set({ activeTabId: existing.id })
+          return
+        }
+        const provider = PROVIDER_CATALOG.find((p) => p.id === providerId)
         const newSession: ApiSession = {
           id: nextId('api'),
           type: 'api',
-          name: 'API Chat',
+          name: provider ? `${provider.name} API` : 'API Chat',
           workspaceId: 'default',
-          provider: 'openai',
+          provider: providerId,
           model: 'default'
         }
-        set((state) => ({ tabs: [...state.tabs, newSession], activeTabId: newSession.id }))
+        set((s) => ({ tabs: [...s.tabs, newSession], activeTabId: newSession.id }))
       },
 
       openTerminalSession: () => {
+        const state = get()
+        const existing = state.tabs.find((t) => t.type === 'terminal')
+        if (existing) {
+          set({ activeTabId: existing.id })
+          return
+        }
         const newSession: TerminalSession = {
           id: nextId('terminal'),
           type: 'terminal',
@@ -95,7 +118,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
           shell: 'default',
           cwd: '~'
         }
-        set((state) => ({ tabs: [...state.tabs, newSession], activeTabId: newSession.id }))
+        set((s) => ({ tabs: [...s.tabs, newSession], activeTabId: newSession.id }))
       },
 
       closeTab: (id) => {

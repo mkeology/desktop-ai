@@ -36,7 +36,7 @@ apps/desktop/
         App.tsx        # main window
         SettingsWindow.tsx  # settings window — same bundle, ?view=settings
         main.tsx, index.css
-        components/  # Sidebar, SidebarAccordion, SidebarBottomMenu, AddProviderForm, TabBar, ContentArea, ChevronDownIcon
+        components/  # Sidebar, SidebarAccordion, SidebarBottomMenu, AddProviderForm, ContentArea, ChevronDownIcon
         hooks/       # useDismissablePopover — shared dropdown/popover open+close behavior
         state/       # useWorkspaceStore (zustand) — tabs, theme, sidebar
     shared/          # imported by main, preload, AND renderer via `@shared/*`

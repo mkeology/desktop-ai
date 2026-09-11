@@ -31,7 +31,7 @@ You never manually download an update. AI Workspace checks for updates automatic
 
 - **Provider** — an AI service or web app (ChatGPT, Claude, Gmail, ...).
 - **Account** — one login for a provider. You can add several accounts for the same provider (e.g. "ChatGPT Personal" and "ChatGPT Work") and they never share cookies or history.
-- **Session** — an open instance of a provider account, an API chat, or a terminal, running in a tab or pane.
+- **Session** — an open instance of a provider account, an API chat, or a terminal. You open and switch between sessions from the sidebar itself (see below) rather than a separate tab bar.
 - **Workspace** — a saved arrangement of sessions (which ones, and how they're split on screen) that you can switch to or restore in one click.
 
 ## The sidebar
@@ -40,12 +40,13 @@ The left panel is how you start every session:
 
 - A **search box** at the top filters everything below it as you type.
 - Four collapsible sections — **AI Web Session** (ChatGPT, Claude, Gemini, DeepSeek, Moonshot, Copilot, Mistral, ...), **Web Apps** (Gmail, Notion, and anything you add), **API Sessions**, **Terminal** — each expands in place (click its header) to show its entries, so you only see what you're looking for. Each entry shows a small colored icon and its name.
+- **The sidebar is also how you switch between what's open** — there's no separate row of tabs anywhere else. An entry you've opened is highlighted and grows a small **✕** to close it; clicking an already-open entry again just brings it to the front instead of opening a second copy of it.
 - Click the **«** button (or press **Cmd/Ctrl+B**) to collapse the sidebar down to a thin strip when you want more room; **»** brings it back.
 - The bottom of the sidebar has a **Menu** button that opens **Settings**, the **light/dark theme** switch, and the app's version, GitHub link, and copyright — see below.
 
 ## Using it
 
-1. **Add a provider or app** — expand **AI Web Session** or **Web Apps** in the sidebar and pick one, or use **+ Add website** at the bottom of **Web Apps** to register any URL yourself.
+1. **Add a provider or app** — expand **AI Web Session** or **Web Apps** in the sidebar and pick one, or use **+ Add website** at the bottom of **Web Apps** to register any URL yourself. Picking one you've already opened just switches to it — you won't end up with duplicates.
 2. **Log in** — it's the provider's real website; log in the normal way. AI Workspace remembers you.
 3. **Add another account** — add the same provider again under a different account name to keep, e.g., work and personal completely separate.
 4. **Arrange your view** — open several sessions side by side with split-screen; drag panes to resize.

@@ -6,7 +6,14 @@ export interface SidebarAccordionItem {
   label: string
   sublabel?: string
   onSelect: () => void
-  onRemove?: () => void
+  /** Highlighted as the currently open/active session for this item. */
+  isActive?: boolean
+  /**
+   * A single trailing icon-button. "Close" when this item has an open
+   * session, "Remove" for a user-added catalog entry that doesn't — never
+   * both at once, so there's only ever one slot to reason about.
+   */
+  trailingAction?: { label: string; onClick: () => void }
 }
 
 interface SidebarAccordionProps {
@@ -59,7 +66,10 @@ export function SidebarAccordion({
               const { letter, hue } = initialsAvatar(item.label)
               return (
                 <li key={item.key}>
-                  <button className="flex items-center gap-2" onClick={item.onSelect}>
+                  <button
+                    className={`flex items-center gap-2 ${item.isActive ? 'active bg-base-300 font-medium' : ''}`}
+                    onClick={item.onSelect}
+                  >
                     <span
                       className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold text-white"
                       style={{ backgroundColor: `hsl(${hue}, 60%, 45%)` }}
@@ -73,15 +83,16 @@ export function SidebarAccordion({
                         <span className="truncate text-xs text-base-content/50">{item.sublabel}</span>
                       )}
                     </span>
-                    {item.onRemove && (
+                    {item.trailingAction && (
                       <span
                         role="button"
                         tabIndex={0}
-                        aria-label={`Remove ${item.label}`}
+                        aria-label={item.trailingAction.label}
+                        title={item.trailingAction.label}
                         className="shrink-0 opacity-60 hover:opacity-100"
                         onClick={(event) => {
                           event.stopPropagation()
-                          item.onRemove?.()
+                          item.trailingAction?.onClick()
                         }}
                       >
                         ✕
