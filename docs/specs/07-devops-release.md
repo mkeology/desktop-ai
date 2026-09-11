@@ -42,6 +42,11 @@ Cutting a release is two steps, not one, because this repo requires every change
 
 No installer should ever prompt for configuration, accounts, or license keys before the app opens.
 
+## Branding
+
+- **App icon** — `apps/desktop/resources/icon.{icns,ico,png}`, referenced explicitly per platform in `electron-builder.yml`, plus used at runtime for the dev-mode window/dock icon (`src/main/index.ts`). Source is a plain SVG (not committed — regenerate from the design if it ever changes) rasterized with `rsvg-convert` and packaged with `iconutil` (macOS `.icns`) and `png-to-ico` (Windows `.ico`).
+- **Provider brand icons** — `apps/desktop/src/renderer/src/data/brandIcons.ts` holds real logo paths + colors from [Simple Icons](https://simpleicons.org) (CC0-1.0 for the artwork; the marks themselves remain trademarks of their respective owners — used here only to identify the service, not to imply endorsement). Not every provider has one: OpenAI/ChatGPT isn't in that dataset (removed at their request) and isn't approximated from memory — it keeps `ProviderIcon`'s colored-initial fallback, which is also what any user-added custom site gets.
+
 ## Updates must be really easy — auto-update requirements
 
 - `electron-updater`, feed pointed at GitHub Releases (default; a dedicated update server is a future option if needed).

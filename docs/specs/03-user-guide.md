@@ -41,7 +41,7 @@ The left panel is how you start every session:
 - A **search box** at the top filters everything below it as you type.
 - Four collapsible sections — **AI Web Session** (ChatGPT, Claude, Gemini, DeepSeek, Moonshot, Copilot, Mistral, ...), **Web Apps** (Gmail, Notion, and anything you add), **API Sessions**, **Terminal** — each expands in place (click its header) to show its entries, so you only see what you're looking for. Each entry shows a small colored icon and its name.
 - **The sidebar is also how you switch between what's open** — there's no separate row of tabs anywhere else. An entry you've opened is highlighted and grows a small **✕** to close it; clicking an already-open entry again just brings it to the front instead of opening a second copy of it.
-- Click the **«** button (or press **Cmd/Ctrl+B**) to collapse the sidebar down to a thin strip when you want more room; **»** brings it back.
+- Click the **«** button (or press **Cmd/Ctrl+B**) to collapse the sidebar down to a thin strip of icons when you want more room — everything's still one click away, just without labels; **»** brings the full sidebar back.
 - The bottom of the sidebar has a **Menu** button that opens **Settings**, the **light/dark theme** switch, and the app's version, GitHub link, and copyright — see below.
 
 ## Using it

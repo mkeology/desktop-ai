@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { PROVIDER_CATALOG, type Provider } from '@shared/providers'
 import { useWorkspaceStore } from '../state/useWorkspaceStore'
 import { AddProviderForm } from './AddProviderForm'
+import { ProviderIcon } from './ProviderIcon'
 import { SidebarAccordion, type SidebarAccordionItem } from './SidebarAccordion'
 import { SidebarBottomMenu } from './SidebarBottomMenu'
 
@@ -18,6 +19,7 @@ function buildWebItem(
 ): SidebarAccordionItem {
   return {
     key: `web-${provider.id}`,
+    iconId: provider.id,
     label: provider.name,
     sublabel: provider.url.replace(/^https?:\/\//, ''),
     onSelect: () => openWebSession(provider.id),
@@ -81,6 +83,7 @@ export function Sidebar() {
         const openTab = tabs.find((t) => t.type === 'api' && t.provider === p.id)
         return {
           key: `api-${p.id}`,
+          iconId: p.id,
           label: `${p.name} API`,
           onSelect: () => openApiSession(p.id),
           isActive: !!openTab && openTab.id === activeTabId,
@@ -95,6 +98,7 @@ export function Sidebar() {
     return [
       {
         key: 'terminal-local',
+        iconId: 'terminal',
         label: 'Local Shell',
         onSelect: () => openTerminalSession(),
         isActive: !!openTab && openTab.id === activeTabId,
@@ -113,17 +117,34 @@ export function Sidebar() {
   const isSearching = query.trim() !== ''
 
   if (!sidebarOpen) {
+    // Icon-only rail: every catalog entry across all four sections, just
+    // without labels or search — click still opens/focuses exactly like
+    // the expanded row does. Matches the original "AI Workspace" sidebar
+    // concept of a narrow provider rail (see the project's .spec notes).
+    const allItems = [...aiProviderItems, ...webAppItems, ...apiItems, ...terminalItems]
     return (
-      <aside className="flex w-12 shrink-0 flex-col items-center border-r border-base-300 bg-base-200 py-2">
+      <aside className="flex w-14 shrink-0 flex-col items-center gap-1 overflow-y-auto border-r border-base-300 bg-base-200 py-2">
         <button
           type="button"
-          className="btn btn-ghost btn-sm"
+          className="btn btn-ghost btn-sm mb-1"
           onClick={() => toggleSidebar()}
           aria-label="Expand sidebar"
           title="Expand sidebar (Cmd/Ctrl+B)"
         >
           »
         </button>
+        {allItems.map((item) => (
+          <button
+            key={item.key}
+            type="button"
+            className={`rounded-full p-1 hover:bg-base-300 ${item.isActive ? 'ring-2 ring-primary' : ''}`}
+            onClick={item.onSelect}
+            title={item.label}
+            aria-label={item.label}
+          >
+            <ProviderIcon id={item.iconId} label={item.label} size={32} />
+          </button>
+        ))}
       </aside>
     )
   }

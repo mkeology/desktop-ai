@@ -10,6 +10,10 @@ import { activateWebSession, attachToWindow, closeWebSession, openWebSession, re
 
 const RENDERER_HTML = join(__dirname, '../renderer/index.html')
 const PRELOAD_SCRIPT = join(__dirname, '../preload/index.js')
+// electron-builder picks up resources/icon.{icns,ico,png} for packaged
+// builds automatically; this is only for the window/taskbar icon in dev
+// mode on Linux/Windows (macOS dev dock icon is set separately below).
+const APP_ICON = join(__dirname, '../../resources/icon.png')
 
 let mainWindow: BrowserWindow | null = null
 let settingsWindow: BrowserWindow | null = null
@@ -32,6 +36,7 @@ function createMainWindow(): BrowserWindow {
     minWidth: 960,
     minHeight: 640,
     show: false,
+    icon: APP_ICON,
     webPreferences: {
       preload: PRELOAD_SCRIPT,
       // Non-negotiable per docs/specs/06-security.md — never loosen these.
@@ -98,6 +103,12 @@ function createSettingsWindow(): void {
 
 app.whenReady().then(() => {
   electronApp.setAppUserModelId('com.aiworkspace.desktop')
+
+  // Packaged macOS builds get the dock icon from the app bundle; only dev
+  // mode needs this (it otherwise shows the plain Electron icon).
+  if (is.dev && process.platform === 'darwin') {
+    app.dock?.setIcon(APP_ICON)
+  }
 
   app.on('browser-window-created', (_event, window) => {
     optimizer.watchWindowShortcuts(window)

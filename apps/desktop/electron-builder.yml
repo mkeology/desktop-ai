@@ -1,7 +1,5 @@
-# Packaging config for AI Workspace. See docs/specs/07-devops-release.md for the
-# install/update requirements this implements. Product icons are not committed
-# yet — electron-builder falls back to the default Electron icon until real
-# branding assets exist (add them under resources/ and reference them here).
+# Packaging config for AI Workspace. See docs/specs/07-devops-release.md for
+# the install/update requirements this implements.
 
 appId: com.aiworkspace.desktop
 productName: AI Workspace
@@ -14,6 +12,7 @@ files:
 
 win:
   target: nsis
+  icon: resources/icon.ico
 
 nsis:
   oneClick: false
@@ -26,12 +25,14 @@ mac:
     - zip
   category: public.app-category.productivity
   hardenedRuntime: true
+  icon: resources/icon.icns
 
 linux:
   target:
     - AppImage
     - deb
   category: Development
+  icon: resources/icon.png
 
 publish:
   provider: github
