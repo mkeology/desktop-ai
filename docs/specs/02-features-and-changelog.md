@@ -22,13 +22,14 @@ Status values: `Planned` · `In Progress` · `Shipped`.
 | Multiple accounts of the same provider | Planned — `accountId` is hardcoded to `"default"` until account-management UI exists |
 | Split-screen / drag-resize panes | Planned |
 | One-click installers, no config (Windows/macOS/Linux) | Shipped — real GitHub Release with installers for all 3 OSes (`v0.0.2`); **unsigned** (no code-signing cert configured yet, see [Security](./06-security.md)) |
+| Custom app icon (window/taskbar/dock/installers, all 3 OSes) | Shipped |
 | Automatic background updates | In Progress — `electron-updater` wired to check on launch, and the update feed (`latest*.yml`) is now published with each release; an older client actually picking up an update hasn't been end-to-end verified yet |
 
 ### Phase 2 — AI-specific layer
 
 | Feature | Status |
 |---|---|
-| Curated AI provider catalog with logos & categories | Planned |
+| Curated AI provider catalog with logos & categories | Shipped — real brand icons for most providers (Simple Icons); ChatGPT has none available and keeps its colored-initial fallback |
 | Favorites / quick launch | Planned |
 | Workspace presets (saved session layouts) | Planned |
 
@@ -52,6 +53,17 @@ Format: [Keep a Changelog](https://keepachangelog.com/) style, [SemVer](https://
 
 ```
 ## [Unreleased]
+### Added
+- A real app icon (window, taskbar, dock, and installers on all three
+  OSes) — no more default Electron icon.
+- Real brand icons for AI Web Session and Web Apps entries (Claude,
+  Gemini, Perplexity, DeepSeek, Moonshot, GitHub Copilot, Mistral, Gmail,
+  Notion), replacing the colored-initial placeholder for those. ChatGPT
+  has no available brand icon and keeps the initial.
+- Collapsed sidebar (**«**) now shows every catalog entry as an icon-only
+  vertical rail instead of just the expand button — still clickable,
+  still highlights whichever session is active.
+
 ### Changed
 - Removed the tab bar above the content area. The sidebar itself is now
   the only place sessions are opened and switched: an open entry is

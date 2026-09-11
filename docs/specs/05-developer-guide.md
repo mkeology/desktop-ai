@@ -20,6 +20,8 @@ docs/
 apps/desktop/
   electron.vite.config.ts   # main/preload/renderer build config (+ @shared alias, __APP_VERSION__)
   electron-builder.yml      # packaging — see docs/specs/07-devops-release.md
+  resources/
+    icon.icns, icon.ico, icon.png  # app icon — see docs/specs/07-devops-release.md#branding
   src/
     main/
       index.ts       # windows (main + settings), menu wiring, CSP, auto-update
@@ -36,7 +38,9 @@ apps/desktop/
         App.tsx        # main window
         SettingsWindow.tsx  # settings window — same bundle, ?view=settings
         main.tsx, index.css
-        components/  # Sidebar, SidebarAccordion, SidebarBottomMenu, AddProviderForm, ContentArea, ChevronDownIcon
+        components/  # Sidebar, SidebarAccordion, SidebarBottomMenu, AddProviderForm, ProviderIcon, ContentArea, ChevronDownIcon
+        data/
+          brandIcons.ts  # real brand SVGs (Simple Icons, CC0) keyed by provider id — see docs/specs/07-devops-release.md#branding
         hooks/       # useDismissablePopover — shared dropdown/popover open+close behavior
         state/       # useWorkspaceStore (zustand) — tabs, theme, sidebar
     shared/          # imported by main, preload, AND renderer via `@shared/*`
