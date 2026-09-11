@@ -56,7 +56,6 @@ export function buildApplicationMenu(mainWindow: BrowserWindow, { onOpenSettings
       label: 'File',
       submenu: [
         { label: 'New Web Session', submenu: webProviderItems },
-        { label: 'New API Session', click: () => send(MENU_CHANNELS.newApiSession) },
         { label: 'New Terminal Session', click: () => send(MENU_CHANNELS.newTerminalSession) },
         { type: 'separator' },
         ...fileMenuSettingsItems,

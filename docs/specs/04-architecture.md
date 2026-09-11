@@ -195,6 +195,31 @@ sequenceDiagram
 
 This was verified against a live provider (DeepSeek): the `WebContentsView`'s own `webContents` loaded the real `chat.deepseek.com` page — confirmed by inspecting it as an independent target, title and URL matching the real site, not a stub.
 
+## Sequence: opening a terminal session
+
+Implemented in `src/main/terminalSessions.ts` (main) and `TerminalView.tsx` (renderer). Unlike a web session, a terminal session has no native OS-level view to attach/detach — the renderer just renders text via `xterm.js`, which has zero Node/Electron access of its own. That means it needs no preload or sandbox exception: it talks to main exclusively through the same typed IPC bridge (`TERMINAL_CHANNELS`) as everything else.
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant R as Renderer (TerminalView)
+    participant M as Main process
+    participant PTY as node-pty process
+
+    U->>R: Click "Local Shell" in the sidebar
+    R->>M: send terminal:open {sessionId}
+    M->>PTY: pty.spawn(shell) (no-op if sessionId already open)
+    PTY-->>M: onData(chunk)
+    M-->>R: send terminal:data {sessionId, data} (+ buffered into a capped history)
+    U->>R: Types in the xterm.js view
+    R->>M: send terminal:input {sessionId, data}
+    M->>PTY: pty.write(data)
+    R->>M: send terminal:resize {sessionId, cols, rows} (on layout change)
+    M->>PTY: pty.resize(cols, rows)
+```
+
+**The shell process outlives the React view.** Switching tabs away unmounts `TerminalView`, but the `pty.IPty` process in main keeps running untouched — only closing the session (the sidebar's **✕**) kills it. Main keeps a bounded (200 KB) rolling buffer of each session's output; when the view remounts (switching back), that buffer is replayed into a fresh `xterm.js` instance before live output resumes, so the terminal reads as continuously alive without needing to keep an `xterm.js` instance (and its DOM) mounted for every open-but-inactive terminal. Closing the app cleanly kills every outstanding PTY — verified no orphaned shell processes remain after a session close or app quit.
+
 ## Non-functional requirements
 
 - **Security:** `contextIsolation: true`, `nodeIntegration: false`, `sandbox: true` on every window/`WebContentsView`; no `remote` module; CSP on the app's own UI. Full detail in [Security](./06-security.md).

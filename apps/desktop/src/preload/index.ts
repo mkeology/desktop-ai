@@ -2,9 +2,13 @@ import { contextBridge, ipcRenderer, type IpcRendererEvent } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
 import {
   SETTINGS_CHANNELS,
+  TERMINAL_CHANNELS,
   WEB_SESSION_CHANNELS,
   type MenuChannel,
   type OpenWebSessionRequest,
+  type TerminalDataMessage,
+  type TerminalInputMessage,
+  type TerminalResizeMessage,
   type WebSessionBounds
 } from '@shared/ipc'
 import type { AppSettings } from '@shared/settings'
@@ -26,7 +30,18 @@ const api = {
   activateWebSession: (sessionId: string | null): void =>
     ipcRenderer.send(WEB_SESSION_CHANNELS.activate, sessionId),
   setWebSessionBounds: (bounds: WebSessionBounds): void =>
-    ipcRenderer.send(WEB_SESSION_CHANNELS.setBounds, bounds)
+    ipcRenderer.send(WEB_SESSION_CHANNELS.setBounds, bounds),
+  openTerminal: (sessionId: string): void => ipcRenderer.send(TERMINAL_CHANNELS.open, sessionId),
+  sendTerminalInput: (sessionId: string, data: string): void =>
+    ipcRenderer.send(TERMINAL_CHANNELS.input, { sessionId, data } satisfies TerminalInputMessage),
+  resizeTerminal: (sessionId: string, cols: number, rows: number): void =>
+    ipcRenderer.send(TERMINAL_CHANNELS.resize, { sessionId, cols, rows } satisfies TerminalResizeMessage),
+  closeTerminal: (sessionId: string): void => ipcRenderer.send(TERMINAL_CHANNELS.close, sessionId),
+  onTerminalData: (callback: (message: TerminalDataMessage) => void): (() => void) => {
+    const listener = (_event: IpcRendererEvent, message: TerminalDataMessage): void => callback(message)
+    ipcRenderer.on(TERMINAL_CHANNELS.data, listener)
+    return () => ipcRenderer.removeListener(TERMINAL_CHANNELS.data, listener)
+  }
 }
 
 if (process.contextIsolated) {

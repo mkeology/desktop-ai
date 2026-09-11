@@ -2,11 +2,34 @@ import { join } from 'node:path'
 import { app, BrowserWindow, ipcMain, Menu, session, shell } from 'electron'
 import { electronApp, is, optimizer } from '@electron-toolkit/utils'
 import { autoUpdater } from 'electron-updater'
-import { SETTINGS_CHANNELS, WEB_SESSION_CHANNELS, type OpenWebSessionRequest, type WebSessionBounds } from '@shared/ipc'
+import {
+  SETTINGS_CHANNELS,
+  TERMINAL_CHANNELS,
+  WEB_SESSION_CHANNELS,
+  type OpenWebSessionRequest,
+  type TerminalInputMessage,
+  type TerminalResizeMessage,
+  type WebSessionBounds
+} from '@shared/ipc'
 import type { AppSettings } from '@shared/settings'
 import { buildApplicationMenu } from './menu'
 import { applyProxySettings, loadSettings, saveSettings } from './settings'
-import { activateWebSession, attachToWindow, closeWebSession, openWebSession, resetWebSessions, setWebSessionBounds } from './webSessions'
+import {
+  attachToWindow as attachTerminalSessionsWindow,
+  closeTerminalSession,
+  openTerminalSession,
+  resetTerminalSessions,
+  resizeTerminal,
+  writeToTerminal
+} from './terminalSessions'
+import {
+  activateWebSession,
+  attachToWindow as attachWebSessionsWindow,
+  closeWebSession,
+  openWebSession,
+  resetWebSessions,
+  setWebSessionBounds
+} from './webSessions'
 
 const RENDERER_HTML = join(__dirname, '../renderer/index.html')
 const PRELOAD_SCRIPT = join(__dirname, '../preload/index.js')
@@ -50,9 +73,11 @@ function createMainWindow(): BrowserWindow {
   window.on('closed', () => {
     mainWindow = null
     resetWebSessions()
+    resetTerminalSessions()
   })
 
-  attachToWindow(window)
+  attachWebSessionsWindow(window)
+  attachTerminalSessionsWindow(window)
 
   // Anything that tries to open a new window (e.g. a link from a future
   // provider WebContentsView) goes to the OS browser, never a new
@@ -140,6 +165,15 @@ app.whenReady().then(() => {
   ipcMain.on(WEB_SESSION_CHANNELS.close, (_event, sessionId: string) => closeWebSession(sessionId))
   ipcMain.on(WEB_SESSION_CHANNELS.activate, (_event, sessionId: string | null) => activateWebSession(sessionId))
   ipcMain.on(WEB_SESSION_CHANNELS.setBounds, (_event, bounds: WebSessionBounds) => setWebSessionBounds(bounds))
+
+  ipcMain.on(TERMINAL_CHANNELS.open, (_event, sessionId: string) => openTerminalSession(sessionId))
+  ipcMain.on(TERMINAL_CHANNELS.input, (_event, { sessionId, data }: TerminalInputMessage) =>
+    writeToTerminal(sessionId, data)
+  )
+  ipcMain.on(TERMINAL_CHANNELS.resize, (_event, { sessionId, cols, rows }: TerminalResizeMessage) =>
+    resizeTerminal(sessionId, cols, rows)
+  )
+  ipcMain.on(TERMINAL_CHANNELS.close, (_event, sessionId: string) => closeTerminalSession(sessionId))
 
   mainWindow = createMainWindow()
 

@@ -4,7 +4,8 @@
 
 export const MENU_CHANNELS = {
   newWebSession: 'menu:new-web-session',
-  newApiSession: 'menu:new-api-session',
+  // API Sessions is temporarily off the menu (see Sidebar.tsx) — no
+  // newApiSession channel while there's nothing to send it to.
   newTerminalSession: 'menu:new-terminal-session',
   toggleTheme: 'menu:toggle-theme',
   toggleSidebar: 'menu:toggle-sidebar'
@@ -41,4 +42,31 @@ export interface WebSessionBounds {
   y: number
   width: number
   height: number
+}
+
+// Fire-and-forget renderer <-> main channels for a real local shell
+// (node-pty in main, xterm.js in the renderer) — see
+// docs/specs/04-architecture.md.
+export const TERMINAL_CHANNELS = {
+  open: 'terminal:open',
+  input: 'terminal:input',
+  resize: 'terminal:resize',
+  close: 'terminal:close',
+  data: 'terminal:data'
+} as const
+
+export interface TerminalInputMessage {
+  sessionId: string
+  data: string
+}
+
+export interface TerminalResizeMessage {
+  sessionId: string
+  cols: number
+  rows: number
+}
+
+export interface TerminalDataMessage {
+  sessionId: string
+  data: string
 }
