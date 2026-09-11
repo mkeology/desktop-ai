@@ -1,75 +1,73 @@
+<div align="center">
+
+<img src="apps/desktop/resources/icon.png" width="96" height="96" alt="AI Workspace icon" />
+
 # AI Workspace
 
-A desktop workspace that keeps every AI provider, API, and terminal you use in its own isolated, persistent session — organized into workspaces you can switch between instantly. See [`docs/specs/`](./docs/specs/README.md) for the full product vision and architecture.
+**Every AI provider you use, one desktop app.** ChatGPT, Claude, Gemini, DeepSeek, and more — each logged in, isolated, and remembered, alongside your web apps and a real terminal. No more juggling a dozen browser tabs.
 
-This repository is a monorepo:
+[Download the latest release](https://github.com/mkeology/desktop-ai/releases/latest) · Windows, macOS, and Linux
 
-- **`apps/desktop`** — the product itself: an Electron + React + TypeScript desktop app for Windows, macOS, and Linux.
-- **`apps/web`** — a marketing landing page (not scaffolded yet).
+</div>
 
-## Prerequisites
+## Why
 
-- **Node.js 22** (or Node 20.19+) — required by the build tooling.
-- **npm** (ships with Node).
+Every AI provider, one place, no compromise on isolation:
+
+- **One app, every provider** — ChatGPT, Claude, Gemini, Perplexity, DeepSeek, Moonshot, GitHub Copilot, Mistral, and your own web apps, all in one sidebar.
+- **Real accounts, real isolation** — each account gets its own persistent, cookie-isolated session, just like separate browser profiles, without the browser.
+- **A real terminal, right alongside them** — a genuine local shell (not a toy), open next to your AI sessions.
+- **Light or dark**, your call, remembered.
+- **Free and open source.**
+
+## See it in action
+
+<table>
+<tr>
+<td width="50%"><img src="docs/imgs/app-light-full.png" alt="AI Workspace in light theme, sidebar expanded, a real local shell terminal open" /></td>
+<td width="50%"><img src="docs/imgs/app-dark-full.png" alt="AI Workspace in dark theme, sidebar expanded" /></td>
+</tr>
+<tr>
+<td width="50%"><img src="docs/imgs/app-dark-collapsed.png" alt="Sidebar collapsed to an icon-only rail" /></td>
+<td width="50%"><img src="docs/imgs/terminal-btop.png" alt="The real local shell terminal running btop" /></td>
+</tr>
+</table>
+
+Each provider is the real, unmodified site, isolated in its own session — sign in once and it's remembered, just like a real browser profile:
+
+<table>
+<tr>
+<td width="25%"><img src="docs/imgs/provider-chatgpt.png" alt="ChatGPT" /></td>
+<td width="25%"><img src="docs/imgs/provider-claude.png" alt="Claude" /></td>
+<td width="25%"><img src="docs/imgs/provider-gemini.png" alt="Gemini" /></td>
+<td width="25%"><img src="docs/imgs/provider-deepseek.png" alt="DeepSeek" /></td>
+</tr>
+<tr>
+<td width="25%"><img src="docs/imgs/provider-moonshot.png" alt="Moonshot Kimi" /></td>
+<td width="25%"><img src="docs/imgs/provider-copilot.png" alt="GitHub Copilot" /></td>
+<td width="25%"><img src="docs/imgs/provider-mistral.png" alt="Mistral Le Chat" /></td>
+<td width="25%"><img src="docs/imgs/provider-notion.png" alt="Notion" /></td>
+</tr>
+</table>
 
 ## Install
 
-From the repository root (this installs both apps via npm workspaces):
+Grab the installer for your OS from the [latest release](https://github.com/mkeology/desktop-ai/releases/latest):
 
-```sh
-npm install
-```
+| Platform | What you download |
+|---|---|
+| **Windows** | `.exe` — double-click, click through the installer |
+| **macOS** | `.dmg` — drag into Applications |
+| **Linux** | `.AppImage` (make it executable and run) or `.deb` |
 
-## Run it (development)
+No account or setup wizard — download, install, open. The app checks for updates automatically after that.
 
-```sh
-npm run dev
-```
+Want to see what's new or what's coming? See the [Features & Changelog](docs/specs/02-features-and-changelog.md).
 
-This starts the desktop app with hot reload — it opens a real Electron window. Try:
+## Contributing
 
-- Click a provider in the sidebar to open a session tab.
-- **Cmd/Ctrl+J** — toggle light/dark theme.
-- **Cmd/Ctrl+B** — toggle the sidebar.
-- The **File** menu can also open new sessions; **View** has the same theme/sidebar toggles.
+Pull requests, issues, and feature requests are more than welcome. See the [Developer Guide](docs/developers.md) to get a local build running, plus the checks CI expects from a PR — and [`docs/specs/`](docs/specs/README.md) for the product's design and roadmap.
 
-This is a UI skeleton: sessions open as placeholder panels, not live provider logins yet — see [Features & Changelog](./docs/specs/02-features-and-changelog.md) for what's implemented.
+## License
 
-## Build & package installers
-
-```sh
-npm run build   # production bundle (all platforms, from any OS)
-cd apps/desktop
-npm run dist:mac    # or dist:win / dist:linux — packages an installer for that OS
-```
-
-Cross-compiling installers for another OS from your current machine isn't reliable (especially macOS `.dmg`/notarization) — the GitHub Actions release workflow (below) builds all three properly, on native runners.
-
-## Checks
-
-Run from the repository root:
-
-```sh
-npm run lint        # ESLint
-npm run typecheck   # TypeScript, no emit
-npm test            # Vitest
-```
-
-CI (`.github/workflows/ci.yml`) runs all of these plus a packaging smoke build on every push/PR.
-
-## Releasing
-
-Two steps, since `main` requires every change to go through a reviewed PR:
-
-1. Go to the **Actions** tab → **Propose Release** → **Run workflow** (from `main`, pick patch/minor/major). It opens a PR bumping the version.
-2. Review and merge that PR. Merging it automatically tags the release and builds + publishes signed installers for Windows, macOS, and Linux as a GitHub Release.
-
-(Pushing a `v*.*.*` tag yourself also works, via `.github/workflows/release.yml`, as a manual fallback.) See [DevOps & Release](./docs/specs/07-devops-release.md) for what "signed" requires (secrets) and how auto-update works.
-
-## Updating (once installed)
-
-The app checks for updates automatically and applies them in the background — no manual download step. See the [User Guide](./docs/specs/03-user-guide.md).
-
-## Project docs
-
-Start at [`docs/specs/README.md`](./docs/specs/README.md) for the full spec set (product vision, architecture, security, developer guide, DevOps). Engineering conventions for AI coding agents live in [`CLAUDE.md`](./CLAUDE.md) and [`.github/copilot-instructions.md`](./.github/copilot-instructions.md).
+See [LICENSE](LICENSE).
