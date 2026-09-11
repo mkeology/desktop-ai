@@ -1,9 +1,11 @@
 import { useEffect } from 'react'
 import { MENU_CHANNELS } from '@shared/ipc'
+import { PROVIDER_CATALOG } from '@shared/providers'
 import { Sidebar } from './components/Sidebar'
-import { TabBar } from './components/TabBar'
 import { ContentArea } from './components/ContentArea'
 import { useWorkspaceStore } from './state/useWorkspaceStore'
+
+const DEFAULT_API_PROVIDER_ID = PROVIDER_CATALOG.find((p) => p.modes.includes('api'))?.id ?? 'chatgpt'
 
 function App() {
   const resolvedTheme = useWorkspaceStore((s) => s.resolvedTheme())
@@ -19,7 +21,9 @@ function App() {
   }, [resolvedTheme])
 
   // The native application menu (src/main/menu.ts) drives the UI purely
-  // through these events, same as any other user action would.
+  // through these events, same as any other user action would. The menu's
+  // "New API Session" item isn't per-provider, so it opens/focuses a
+  // sensible default rather than asking which one.
   useEffect(() => {
     const unsubscribers = [
       window.api.onMenuAction(MENU_CHANNELS.toggleTheme, () => toggleTheme()),
@@ -27,21 +31,19 @@ function App() {
       window.api.onMenuAction(MENU_CHANNELS.newWebSession, (providerId) =>
         openWebSession(providerId as string)
       ),
-      window.api.onMenuAction(MENU_CHANNELS.newApiSession, () => openApiSession()),
+      window.api.onMenuAction(MENU_CHANNELS.newApiSession, () => openApiSession(DEFAULT_API_PROVIDER_ID)),
       window.api.onMenuAction(MENU_CHANNELS.newTerminalSession, () => openTerminalSession())
     ]
     return () => unsubscribers.forEach((unsubscribe) => unsubscribe())
   }, [toggleTheme, toggleSidebar, openWebSession, openApiSession, openTerminalSession])
 
+  // No separate tab strip — the sidebar itself shows which session is open
+  // and active (see Sidebar.tsx), so there's nowhere else tabs need to
+  // appear in the layout.
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-base-100 text-base-content">
       <Sidebar />
-      <div className="flex min-w-0 flex-1 flex-col">
-        <div className="flex items-center border-b border-base-300 px-2">
-          <TabBar />
-        </div>
-        <ContentArea />
-      </div>
+      <ContentArea />
     </div>
   )
 }

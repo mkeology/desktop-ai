@@ -12,7 +12,7 @@ Status values: `Planned` · `In Progress` · `Shipped`.
 |---|---|
 | Electron shell (Windows/macOS/Linux) | In Progress — builds & runs on macOS; Windows/Linux packaging untested locally, covered by CI |
 | Sidebar: searchable, collapsible accordion menu (AI Web Session/Web Apps/API/Terminal) | In Progress — real UX, static seed catalog underneath, no accounts yet |
-| Tabs (open/switch/close) | In Progress — real for web sessions (isolated `WebContentsView`); still placeholder content for API/terminal |
+| Sessions: open/switch/close, one per provider (no duplicates) | In Progress — sidebar-driven (no separate tab bar); real for web sessions (isolated `WebContentsView`), still placeholder content for API/terminal |
 | Native application menu (File/Edit/View/Window/Help) | Shipped |
 | Light/dark theme, persisted, `Cmd/Ctrl+J` toggle | Shipped |
 | Settings window: corporate proxy (HTTP/HTTPS/no-proxy) | Shipped — applied via `session.setProxy`; stored as plain JSON, see [Security](./06-security.md) known gap |
@@ -52,6 +52,15 @@ Format: [Keep a Changelog](https://keepachangelog.com/) style, [SemVer](https://
 
 ```
 ## [Unreleased]
+### Changed
+- Removed the tab bar above the content area. The sidebar itself is now
+  the only place sessions are opened and switched: an open entry is
+  highlighted and grows a **✕** to close it; clicking an already-open
+  entry brings it to the front instead of opening a duplicate. Applies to
+  AI Web Session, Web Apps, and API sessions (one per provider) and
+  Terminal (one at a time).
+
+## [0.0.3] - 2026-09-10
 ### Fixed
 - Content window going blank after opening several web sessions (reported
   on Windows, noticed around the 5th/6th tab). Inactive sessions were

@@ -5,17 +5,28 @@ import { AddProviderForm } from './AddProviderForm'
 import { SidebarAccordion, type SidebarAccordionItem } from './SidebarAccordion'
 import { SidebarBottomMenu } from './SidebarBottomMenu'
 
-function providerToItem(
+// One open tab per provider — the sidebar row itself doubles as that
+// provider's tab: clicking it opens a session if none is open, or just
+// focuses the existing one. See docs/specs/01-product-vision.md.
+function buildWebItem(
   provider: Pick<Provider, 'id' | 'name' | 'url'>,
-  onSelect: (id: string) => void,
-  onRemove?: (id: string) => void
+  openTabId: string | undefined,
+  activeTabId: string | null,
+  openWebSession: (id: string) => void,
+  closeTab: (id: string) => void,
+  removeCustomProvider?: (id: string) => void
 ): SidebarAccordionItem {
   return {
     key: `web-${provider.id}`,
     label: provider.name,
     sublabel: provider.url.replace(/^https?:\/\//, ''),
-    onSelect: () => onSelect(provider.id),
-    ...(onRemove ? { onRemove: () => onRemove(provider.id) } : {})
+    onSelect: () => openWebSession(provider.id),
+    isActive: !!openTabId && openTabId === activeTabId,
+    trailingAction: openTabId
+      ? { label: 'Close', onClick: () => closeTab(openTabId) }
+      : removeCustomProvider
+        ? { label: 'Remove', onClick: () => removeCustomProvider(provider.id) }
+        : undefined
   }
 }
 
@@ -24,9 +35,12 @@ function providerToItem(
 export function Sidebar() {
   const sidebarOpen = useWorkspaceStore((s) => s.sidebarOpen)
   const toggleSidebar = useWorkspaceStore((s) => s.toggleSidebar)
+  const tabs = useWorkspaceStore((s) => s.tabs)
+  const activeTabId = useWorkspaceStore((s) => s.activeTabId)
   const openWebSession = useWorkspaceStore((s) => s.openWebSession)
   const openApiSession = useWorkspaceStore((s) => s.openApiSession)
   const openTerminalSession = useWorkspaceStore((s) => s.openTerminalSession)
+  const closeTab = useWorkspaceStore((s) => s.closeTab)
   const customProviders = useWorkspaceStore((s) => s.customProviders)
   const removeCustomProvider = useWorkspaceStore((s) => s.removeCustomProvider)
   const [query, setQuery] = useState('')
@@ -36,39 +50,58 @@ export function Sidebar() {
   // even though both open as a "web" session. See docs/specs/01-product-vision.md.
   const aiProviderItems: SidebarAccordionItem[] = useMemo(
     () =>
-      PROVIDER_CATALOG.filter((p) => p.modes.includes('web') && p.category === 'ai').map((p) =>
-        providerToItem(p, openWebSession)
-      ),
-    [openWebSession]
+      PROVIDER_CATALOG.filter((p) => p.modes.includes('web') && p.category === 'ai').map((p) => {
+        const openTab = tabs.find((t) => t.type === 'web' && t.providerId === p.id)
+        return buildWebItem(p, openTab?.id, activeTabId, openWebSession, closeTab)
+      }),
+    [tabs, activeTabId, openWebSession, closeTab]
   )
 
   // Built-in "productivity" web apps first, then anything the user has
   // added — the sidebar is extensible rather than a fixed list. Only
-  // custom entries get a remove control.
-  const webAppItems: SidebarAccordionItem[] = useMemo(
-    () => [
-      ...PROVIDER_CATALOG.filter((p) => p.modes.includes('web') && p.category === 'productivity').map((p) =>
-        providerToItem(p, openWebSession)
-      ),
-      ...customProviders.map((p) => providerToItem(p, openWebSession, removeCustomProvider))
-    ],
-    [openWebSession, customProviders, removeCustomProvider]
-  )
+  // custom entries (and only while not open) get a "Remove from catalog"
+  // control; an open one gets "Close" instead — never both.
+  const webAppItems: SidebarAccordionItem[] = useMemo(() => {
+    const builtIn = PROVIDER_CATALOG.filter((p) => p.modes.includes('web') && p.category === 'productivity').map(
+      (p) => {
+        const openTab = tabs.find((t) => t.type === 'web' && t.providerId === p.id)
+        return buildWebItem(p, openTab?.id, activeTabId, openWebSession, closeTab)
+      }
+    )
+    const custom = customProviders.map((p) => {
+      const openTab = tabs.find((t) => t.type === 'web' && t.providerId === p.id)
+      return buildWebItem(p, openTab?.id, activeTabId, openWebSession, closeTab, removeCustomProvider)
+    })
+    return [...builtIn, ...custom]
+  }, [tabs, activeTabId, openWebSession, closeTab, customProviders, removeCustomProvider])
 
   const apiItems: SidebarAccordionItem[] = useMemo(
     () =>
-      PROVIDER_CATALOG.filter((p) => p.modes.includes('api')).map((p) => ({
-        key: `api-${p.id}`,
-        label: `${p.name} API`,
-        onSelect: () => openApiSession()
-      })),
-    [openApiSession]
+      PROVIDER_CATALOG.filter((p) => p.modes.includes('api')).map((p) => {
+        const openTab = tabs.find((t) => t.type === 'api' && t.provider === p.id)
+        return {
+          key: `api-${p.id}`,
+          label: `${p.name} API`,
+          onSelect: () => openApiSession(p.id),
+          isActive: !!openTab && openTab.id === activeTabId,
+          trailingAction: openTab ? { label: 'Close', onClick: () => closeTab(openTab.id) } : undefined
+        }
+      }),
+    [tabs, activeTabId, openApiSession, closeTab]
   )
 
-  const terminalItems: SidebarAccordionItem[] = useMemo(
-    () => [{ key: 'terminal-local', label: 'Local Shell', onSelect: () => openTerminalSession() }],
-    [openTerminalSession]
-  )
+  const terminalItems: SidebarAccordionItem[] = useMemo(() => {
+    const openTab = tabs.find((t) => t.type === 'terminal')
+    return [
+      {
+        key: 'terminal-local',
+        label: 'Local Shell',
+        onSelect: () => openTerminalSession(),
+        isActive: !!openTab && openTab.id === activeTabId,
+        trailingAction: openTab ? { label: 'Close', onClick: () => closeTab(openTab.id) } : undefined
+      }
+    ]
+  }, [tabs, activeTabId, openTerminalSession, closeTab])
 
   const matches = (items: SidebarAccordionItem[]): SidebarAccordionItem[] =>
     query.trim() === '' ? items : items.filter((item) => item.label.toLowerCase().includes(query.toLowerCase()))
