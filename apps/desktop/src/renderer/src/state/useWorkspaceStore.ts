@@ -122,7 +122,9 @@ export const useWorkspaceStore = create<WorkspaceState>()(
       },
 
       closeTab: (id) => {
-        window.api.closeWebSession(id) // no-op in main if this wasn't a web session
+        // No-op in main for whichever of these this tab isn't.
+        window.api.closeWebSession(id)
+        window.api.closeTerminal(id)
         set((state) => {
           const tabs = state.tabs.filter((t) => t.id !== id)
           const activeTabId = state.activeTabId === id ? (tabs.at(-1)?.id ?? null) : state.activeTabId

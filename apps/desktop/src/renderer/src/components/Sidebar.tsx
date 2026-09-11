@@ -40,7 +40,6 @@ export function Sidebar() {
   const tabs = useWorkspaceStore((s) => s.tabs)
   const activeTabId = useWorkspaceStore((s) => s.activeTabId)
   const openWebSession = useWorkspaceStore((s) => s.openWebSession)
-  const openApiSession = useWorkspaceStore((s) => s.openApiSession)
   const openTerminalSession = useWorkspaceStore((s) => s.openTerminalSession)
   const closeTab = useWorkspaceStore((s) => s.closeTab)
   const customProviders = useWorkspaceStore((s) => s.customProviders)
@@ -77,21 +76,10 @@ export function Sidebar() {
     return [...builtIn, ...custom]
   }, [tabs, activeTabId, openWebSession, closeTab, customProviders, removeCustomProvider])
 
-  const apiItems: SidebarAccordionItem[] = useMemo(
-    () =>
-      PROVIDER_CATALOG.filter((p) => p.modes.includes('api')).map((p) => {
-        const openTab = tabs.find((t) => t.type === 'api' && t.provider === p.id)
-        return {
-          key: `api-${p.id}`,
-          iconId: p.id,
-          label: `${p.name} API`,
-          onSelect: () => openApiSession(p.id),
-          isActive: !!openTab && openTab.id === activeTabId,
-          trailingAction: openTab ? { label: 'Close', onClick: () => closeTab(openTab.id) } : undefined
-        }
-      }),
-    [tabs, activeTabId, openApiSession, closeTab]
-  )
+  // API Sessions is temporarily removed from the UI (Phase 3 isn't built
+  // yet — see docs/specs/01-product-vision.md) rather than deleted: the
+  // ApiSession type, store action, and ContentArea placeholder all stay,
+  // just unreachable from the sidebar/menu for now.
 
   const terminalItems: SidebarAccordionItem[] = useMemo(() => {
     const openTab = tabs.find((t) => t.type === 'terminal')
@@ -112,16 +100,15 @@ export function Sidebar() {
 
   const filteredAiProviders = matches(aiProviderItems)
   const filteredWebApps = matches(webAppItems)
-  const filteredApi = matches(apiItems)
   const filteredTerminal = matches(terminalItems)
   const isSearching = query.trim() !== ''
 
   if (!sidebarOpen) {
-    // Icon-only rail: every catalog entry across all four sections, just
+    // Icon-only rail: every catalog entry across all sections, just
     // without labels or search — click still opens/focuses exactly like
     // the expanded row does. Matches the original "AI Workspace" sidebar
     // concept of a narrow provider rail (see the project's .spec notes).
-    const allItems = [...aiProviderItems, ...webAppItems, ...apiItems, ...terminalItems]
+    const allItems = [...aiProviderItems, ...webAppItems, ...terminalItems]
     return (
       <aside className="flex w-14 shrink-0 flex-col items-center gap-1 overflow-y-auto border-r border-base-300 bg-base-200 py-2">
         <button
@@ -188,12 +175,6 @@ export function Sidebar() {
           items={filteredWebApps}
           forceOpen={isSearching && filteredWebApps.length > 0}
           footer={!isSearching && <AddProviderForm />}
-        />
-        <SidebarAccordion
-          icon="⚡"
-          label="API Sessions"
-          items={filteredApi}
-          forceOpen={isSearching && filteredApi.length > 0}
         />
         <SidebarAccordion
           icon="⌨️"

@@ -11,8 +11,8 @@ Status values: `Planned` · `In Progress` · `Shipped`.
 | Feature | Status |
 |---|---|
 | Electron shell (Windows/macOS/Linux) | In Progress — builds & runs on macOS; Windows/Linux packaging untested locally, covered by CI |
-| Sidebar: searchable, collapsible accordion menu (AI Web Session/Web Apps/API/Terminal) | In Progress — real UX, static seed catalog underneath, no accounts yet |
-| Sessions: open/switch/close, one per provider (no duplicates) | In Progress — sidebar-driven (no separate tab bar); real for web sessions (isolated `WebContentsView`), still placeholder content for API/terminal |
+| Sidebar: searchable, collapsible accordion menu (AI Web Session/Web Apps/Terminal) | In Progress — real UX, static seed catalog underneath, no accounts yet; API Sessions is temporarily removed (see Phase 3) |
+| Sessions: open/switch/close, one per provider (no duplicates) | Shipped — sidebar-driven (no separate tab bar); real for web sessions (isolated `WebContentsView`) and terminal (real shell); API still placeholder content, and off the sidebar for now |
 | Native application menu (File/Edit/View/Window/Help) | Shipped |
 | Light/dark theme, persisted, `Cmd/Ctrl+J` toggle | Shipped |
 | Settings window: corporate proxy (HTTP/HTTPS/no-proxy) | Shipped — applied via `session.setProxy`; stored as plain JSON, see [Security](./06-security.md) known gap |
@@ -24,6 +24,7 @@ Status values: `Planned` · `In Progress` · `Shipped`.
 | One-click installers, no config (Windows/macOS/Linux) | Shipped — real GitHub Release with installers for all 3 OSes (`v0.0.2`); **unsigned** (no code-signing cert configured yet, see [Security](./06-security.md)) |
 | Custom app icon (window/taskbar/dock/installers, all 3 OSes) | Shipped |
 | Automatic background updates | In Progress — `electron-updater` wired to check on launch, and the update feed (`latest*.yml`) is now published with each release; an older client actually picking up an update hasn't been end-to-end verified yet |
+| Terminal session: real local shell (`node-pty` + xterm.js) | Shipped — one at a time; keeps running in the background across tab switches, with scrollback replayed on return; SSH/Docker/WSL targets not built |
 
 ### Phase 2 — AI-specific layer
 
@@ -37,14 +38,14 @@ Status values: `Planned` · `In Progress` · `Shipped`.
 
 | Feature | Status |
 |---|---|
-| Unified API chat session (OpenAI, Anthropic, Gemini, OpenRouter, Ollama, LM Studio) | Planned |
+| Unified API chat session (OpenAI, Anthropic, Gemini, OpenRouter, Ollama, LM Studio) | Planned — sidebar entry point and store action were pulled out temporarily; the `ApiSession` type and a placeholder content view still exist |
 | Per-provider "Web Login" + "API" mode toggle | Planned |
 
 ### Phase 4 — Agent capabilities (future, not committed)
 
 | Feature | Status |
 |---|---|
-| Terminal sessions (local shell / SSH / Docker / WSL) | Planned |
+| SSH / Docker / WSL terminal targets | Planned — local shell is shipped (see Phase 1); these are additional targets for the same Terminal session type |
 | Explicit, revocable AI-session → terminal permission | Planned |
 
 ## Product diffs (changelog)
@@ -63,6 +64,10 @@ Format: [Keep a Changelog](https://keepachangelog.com/) style, [SemVer](https://
 - Collapsed sidebar (**«**) now shows every catalog entry as an icon-only
   vertical rail instead of just the expand button — still clickable,
   still highlights whichever session is active.
+- **Local Shell** under **Terminal** now opens a real terminal (your
+  actual default shell, via a native pseudo-terminal), not a placeholder.
+  It keeps running in the background when you switch to another session,
+  and its scrollback replays when you switch back.
 
 ### Changed
 - Removed the tab bar above the content area. The sidebar itself is now
@@ -71,6 +76,12 @@ Format: [Keep a Changelog](https://keepachangelog.com/) style, [SemVer](https://
   entry brings it to the front instead of opening a duplicate. Applies to
   AI Web Session, Web Apps, and API sessions (one per provider) and
   Terminal (one at a time).
+
+### Removed
+- The **API Sessions** section is temporarily off the sidebar and the
+  **File** menu (no unified API chat exists yet — see
+  [Features & Changelog](#feature-status), Phase 3). Nothing was deleted
+  under the hood; it's coming back once that feature is actually built.
 
 ## [0.0.3] - 2026-09-10
 ### Fixed

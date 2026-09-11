@@ -28,6 +28,7 @@ apps/desktop/
       menu.ts        # native application menu
       settings.ts    # settings.json read/write + session.setProxy
       webSessions.ts # WebContentsView lifecycle + partitioning per web session
+      terminalSessions.ts # node-pty lifecycle: spawn/write/resize/close + capped history buffer
       __tests__/
     preload/
       index.ts       # the ONLY contextBridge API surface
@@ -38,7 +39,7 @@ apps/desktop/
         App.tsx        # main window
         SettingsWindow.tsx  # settings window — same bundle, ?view=settings
         main.tsx, index.css
-        components/  # Sidebar, SidebarAccordion, SidebarBottomMenu, AddProviderForm, ProviderIcon, ContentArea, ChevronDownIcon
+        components/  # Sidebar, SidebarAccordion, SidebarBottomMenu, AddProviderForm, ProviderIcon, ContentArea, TerminalView, ChevronDownIcon
         data/
           brandIcons.ts  # real brand SVGs (Simple Icons, CC0) keyed by provider id — see docs/specs/07-devops-release.md#branding
         hooks/       # useDismissablePopover — shared dropdown/popover open+close behavior
@@ -47,10 +48,10 @@ apps/desktop/
       session.ts     # the Session discriminated union
       providers.ts   # seed provider catalog (data, not code)
       settings.ts    # AppSettings / ProxySettings shape + defaults
-      ipc.ts         # menu + settings + web-session IPC channel names, typed on both ends
+      ipc.ts         # menu + settings + web-session + terminal IPC channel names, typed on both ends
 ```
 
-As real features land, `main/terminal/` (PTY) and `main/storage/` (SQLite + `safeStorage`) get added under `main/` per [Architecture](./04-architecture.md) — not built yet.
+As real features land, `main/storage/` (SQLite + `safeStorage`) gets added under `main/` per [Architecture](./04-architecture.md) — not built yet. `node-pty` is a native module, so it must be rebuilt against Electron's ABI (not just Node's) after every install — handled by a `postinstall` script (`electron-builder install-app-deps`) rather than a manual step.
 
 ## Tech stack
 

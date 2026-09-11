@@ -1,14 +1,10 @@
 import { useEffect, useRef } from 'react'
-import type { ApiSession, TerminalSession } from '@shared/session'
+import type { ApiSession } from '@shared/session'
 import { useWorkspaceStore } from '../state/useWorkspaceStore'
+import { TerminalView } from './TerminalView'
 
-function describeSession(session: ApiSession | TerminalSession): string {
-  switch (session.type) {
-    case 'api':
-      return `Unified API chat session (provider: ${session.provider}). The chat UI lands here in Phase 3 — see docs/specs/01-product-vision.md.`
-    case 'terminal':
-      return `Local terminal session (shell: ${session.shell}). The embedded terminal lands here in a later milestone — see docs/specs/04-architecture.md.`
-  }
+function describeSession(session: ApiSession): string {
+  return `Unified API chat session (provider: ${session.provider}). The chat UI lands here in Phase 3 — see docs/specs/01-product-vision.md.`
 }
 
 export function ContentArea() {
@@ -67,7 +63,12 @@ export function ContentArea() {
           <p className="text-sm">Pick a provider, API chat, or terminal from the sidebar to get started.</p>
         </div>
       )}
-      {activeTab && activeTab.type !== 'web' && (
+      {activeTab?.type === 'terminal' && (
+        <div className="absolute inset-0">
+          <TerminalView sessionId={activeTab.id} />
+        </div>
+      )}
+      {activeTab?.type === 'api' && (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-8 text-center">
           <h2 className="text-xl font-semibold">{activeTab.name}</h2>
           <p className="max-w-md text-sm text-base-content/70">{describeSession(activeTab)}</p>

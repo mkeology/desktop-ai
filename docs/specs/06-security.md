@@ -29,10 +29,11 @@ These are non-negotiable — see [Agent Rules](./00-agent-rules.md) for how to t
 
 ### Terminal sessions
 
-- No AI/API session has terminal access by default. Ever.
-- Granting an API session the ability to act on a terminal session is an explicit, per-session, user-initiated, revocable permission — never a global setting turned on once and forgotten.
-- Commands classified as destructive (file deletion, force-push, `rm -rf`-shaped patterns, etc.) require interactive confirmation even when a permission has been granted.
-- SSH/Docker/WSL terminal targets are configured by the user explicitly; the app doesn't auto-discover or auto-connect to remote hosts.
+- A human opening **Local Shell** from the sidebar gets a real, unrestricted shell — exactly as if they'd opened their OS's own terminal app. That's the intended, shipped feature (`node-pty` + `xterm.js`, see [Architecture](./04-architecture.md#sequence-opening-a-terminal-session)), not a gap: it's the user acting directly, not an AI acting on their behalf.
+- That is categorically different from, and must never be confused with, the rule below: **no AI/API session has terminal access by default. Ever.** This second capability (an AI session driving a terminal session) is not built — Phase 3/4 in [Features & Changelog](./02-features-and-changelog.md) — and the rules below apply to it whenever it is:
+  - Granting an API session the ability to act on a terminal session is an explicit, per-session, user-initiated, revocable permission — never a global setting turned on once and forgotten.
+  - Commands classified as destructive (file deletion, force-push, `rm -rf`-shaped patterns, etc.) require interactive confirmation even when a permission has been granted.
+  - SSH/Docker/WSL terminal targets are configured by the user explicitly; the app doesn't auto-discover or auto-connect to remote hosts.
 
 ### Secrets
 

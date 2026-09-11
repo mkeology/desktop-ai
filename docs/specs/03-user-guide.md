@@ -39,7 +39,7 @@ You never manually download an update. AI Workspace checks for updates automatic
 The left panel is how you start every session:
 
 - A **search box** at the top filters everything below it as you type.
-- Four collapsible sections — **AI Web Session** (ChatGPT, Claude, Gemini, DeepSeek, Moonshot, Copilot, Mistral, ...), **Web Apps** (Gmail, Notion, and anything you add), **API Sessions**, **Terminal** — each expands in place (click its header) to show its entries, so you only see what you're looking for. Each entry shows a small colored icon and its name.
+- Three collapsible sections — **AI Web Session** (ChatGPT, Claude, Gemini, DeepSeek, Moonshot, Copilot, Mistral, ...), **Web Apps** (Gmail, Notion, and anything you add), **Terminal** — each expands in place (click its header) to show its entries, so you only see what you're looking for. Each entry shows a small colored icon and its name. (API Sessions is temporarily off the sidebar until that feature is actually built — see [Features & Changelog](./02-features-and-changelog.md).)
 - **The sidebar is also how you switch between what's open** — there's no separate row of tabs anywhere else. An entry you've opened is highlighted and grows a small **✕** to close it; clicking an already-open entry again just brings it to the front instead of opening a second copy of it.
 - Click the **«** button (or press **Cmd/Ctrl+B**) to collapse the sidebar down to a thin strip of icons when you want more room — everything's still one click away, just without labels; **»** brings the full sidebar back.
 - The bottom of the sidebar has a **Menu** button that opens **Settings**, the **light/dark theme** switch, and the app's version, GitHub link, and copyright — see below.
@@ -51,8 +51,8 @@ The left panel is how you start every session:
 3. **Add another account** — add the same provider again under a different account name to keep, e.g., work and personal completely separate.
 4. **Arrange your view** — open several sessions side by side with split-screen; drag panes to resize.
 5. **Save it as a workspace** — name your current layout so you can jump back to it later in one click.
-6. **API sessions** (once available) — add a provider's API key to chat through a unified interface instead of (or alongside) its website.
-7. **Terminal sessions** (once available) — open a local shell, SSH, or Docker terminal as just another session in your workspace.
+6. **Terminal** — expand **Terminal** and pick **Local Shell** to open a real terminal (your default shell) right alongside your AI sessions. It keeps running in the background when you switch away, so you don't lose your place; SSH/Docker terminals are a possible future addition.
+7. **API sessions** (not in the sidebar for the moment) — a future unified API-key chat interface, alongside the website-based sessions above.
 
 ## Settings
 
