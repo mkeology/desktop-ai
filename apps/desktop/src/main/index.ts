@@ -31,6 +31,13 @@ import {
   setWebSessionBounds
 } from './webSessions'
 
+// Must run before app is ready: in dev mode the running binary is the
+// generic Electron.app, whose menu bar / About panel / Dock name defaults
+// to "Electron" regardless of package.json — this is what actually renames
+// it. Packaged builds get the right name for free from electron-builder's
+// `productName`, but setting it here too keeps dev and prod consistent.
+app.setName('AI Workspace')
+
 const RENDERER_HTML = join(__dirname, '../renderer/index.html')
 const PRELOAD_SCRIPT = join(__dirname, '../preload/index.js')
 // electron-builder picks up resources/icon.{icns,ico,png} for packaged
@@ -54,6 +61,7 @@ function loadRenderer(window: BrowserWindow, view?: 'settings'): void {
 
 function createMainWindow(): BrowserWindow {
   const window = new BrowserWindow({
+    title: 'AI Workspace',
     width: 1280,
     height: 800,
     minWidth: 960,
