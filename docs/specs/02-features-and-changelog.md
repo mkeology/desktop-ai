@@ -52,6 +52,14 @@ Format: [Keep a Changelog](https://keepachangelog.com/) style, [SemVer](https://
 
 ```
 ## [Unreleased]
+### Fixed
+- Content window going blank after opening several web sessions (reported
+  on Windows, noticed around the 5th/6th tab). Inactive sessions were
+  hidden by resizing them to zero instead of detaching them from the
+  window — a known-flaky pattern in Electron's `WebContentsView` where the
+  page keeps rendering correctly underneath but the compositor doesn't
+  reliably repaint it once resized back. Switched to attaching only the
+  active session's view and detaching everything else.
 
 ## [0.0.2] - 2026-09-10
 ### Added

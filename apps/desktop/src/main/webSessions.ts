@@ -48,10 +48,10 @@ export function openWebSession(request: OpenWebSessionRequest): void {
     return { action: 'deny' }
   })
 
-  ownerWindow.contentView.addChildView(view)
-  view.setBounds(ZERO_BOUNDS) // hidden until activated
+  // Not attached to the window yet — only the active session's view is
+  // ever attached (see activateWebSession). It still loads and keeps
+  // running in the background so switching back to it doesn't reload it.
   void view.webContents.loadURL(request.url)
-
   views.set(request.sessionId, view)
 }
 
@@ -59,27 +59,44 @@ export function closeWebSession(sessionId: string): void {
   const view = views.get(sessionId)
   if (!view) return
 
-  ownerWindow?.contentView.removeChildView(view)
+  if (activeSessionId === sessionId) {
+    ownerWindow?.contentView.removeChildView(view)
+    activeSessionId = null
+  }
   view.webContents.close()
   views.delete(sessionId)
-  if (activeSessionId === sessionId) activeSessionId = null
 }
 
-// Only one session is ever visible at a time today (no split-screen yet) —
-// giving every inactive view zero-size bounds keeps them alive (so their
-// login state and scroll position survive) without them being on-screen.
+// Only one session is ever visible at a time today (no split-screen yet).
+// The inactive-but-open sessions are deliberately *detached* from the
+// window's contentView rather than just resized to zero — toggling
+// visibility via setBounds(0,0,0,0) is a known-flaky pattern in Electron's
+// WebContentsView: the page keeps rendering correctly underneath (verified
+// via CDP), but the compositor doesn't reliably repaint it once it's given
+// real bounds again, especially with several views cycling through this.
+// Fully removing/re-adding the view from the tree avoids that class of bug.
 export function activateWebSession(sessionId: string | null): void {
+  if (!ownerWindow) return
+
+  if (activeSessionId && activeSessionId !== sessionId) {
+    const previous = views.get(activeSessionId)
+    if (previous) ownerWindow.contentView.removeChildView(previous)
+  }
+
   activeSessionId = sessionId
-  applyBounds()
+
+  if (sessionId) {
+    const view = views.get(sessionId)
+    if (view) {
+      ownerWindow.contentView.addChildView(view)
+      view.setBounds(lastBounds)
+    }
+  }
 }
 
 export function setWebSessionBounds(bounds: WebSessionBounds): void {
   lastBounds = bounds
-  applyBounds()
-}
-
-function applyBounds(): void {
-  for (const [id, view] of views) {
-    view.setBounds(id === activeSessionId ? lastBounds : ZERO_BOUNDS)
-  }
+  if (!activeSessionId) return
+  const view = views.get(activeSessionId)
+  if (view) view.setBounds(lastBounds)
 }

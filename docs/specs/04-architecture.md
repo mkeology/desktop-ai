@@ -172,7 +172,7 @@ A proxy URL that embeds credentials (`http://user:pass@host`) is effectively a s
 
 ## Sequence: opening an isolated web session
 
-Implemented in `src/main/webSessions.ts` (main) and `ContentArea.tsx` (renderer). One `WebContentsView` per open web session tab, kept alive in the background when not the active tab rather than destroyed — switching back doesn't reload it.
+Implemented in `src/main/webSessions.ts` (main) and `ContentArea.tsx` (renderer). One `WebContentsView` per open web session tab, kept alive (loaded, not destroyed) in the background when not the active tab — switching back doesn't reload it.
 
 ```mermaid
 sequenceDiagram
@@ -185,11 +185,13 @@ sequenceDiagram
     R->>M: send web-session:open {sessionId, providerId, accountId, url}
     M->>M: partition = "persist:chatgpt-default" (no-op if sessionId already open)
     M->>WCV: new WebContentsView({webPreferences: {partition, sandbox: true, contextIsolation: true, nodeIntegration: false}})<br/>— no preload
-    M->>WCV: loadURL(url)
+    M->>WCV: loadURL(url) — not attached to the window yet
     R->>M: send web-session:activate {sessionId}
-    M->>WCV: setBounds(contentArea rect) — every other open view gets zero-size bounds
+    M->>WCV: removeChildView(previous active, if any); addChildView(this one); setBounds(contentArea rect)
     Note over R,M: ContentArea's ResizeObserver keeps sending web-session:set-bounds<br/>whenever the pane resizes (window resize, sidebar collapse/expand)
 ```
+
+**Visibility is done by attach/detach, not by resizing to zero.** Only the *active* session's `WebContentsView` is ever attached to `mainWindow.contentView`; every other open session exists purely as a loaded, detached `WebContents` (session state intact, not rendering/compositing). An earlier version hid inactive views by resizing them to `{0,0,0,0}` instead — that's a known-flaky pattern in Electron: the page keeps rendering correctly underneath (confirmed via CDP), but the on-screen compositor doesn't reliably repaint it once given real bounds again, especially on Windows and with several sessions cycling through it. That caused a real bug (window going blank after several tabs were opened) fixed by switching to attach/detach.
 
 This was verified against a live provider (DeepSeek): the `WebContentsView`'s own `webContents` loaded the real `chat.deepseek.com` page — confirmed by inspecting it as an independent target, title and URL matching the real site, not a stub.
 
