@@ -154,3 +154,4 @@ release/
 
 *.env
 *.spec
+.DS_Store

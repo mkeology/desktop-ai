@@ -6,7 +6,7 @@
 
 **Every AI provider you use, one desktop app.** ChatGPT, Claude, Gemini, DeepSeek, and more — each logged in, isolated, and remembered, alongside your web apps and a real terminal. No more juggling a dozen browser tabs.
 
-[Download the latest release](https://github.com/mkeology/desktop-ai/releases/latest) · Windows, macOS, and Linux
+[Download the latest release](https://github.com/mkeology/desktop-ai/releases/latest) · Windows, macOS, and Linux · [Developer docs](docs/developers.md)
 
 </div>
 
@@ -22,17 +22,6 @@ Every AI provider, one place, no compromise on isolation:
 
 ## See it in action
 
-<table>
-<tr>
-<td width="50%"><img src="docs/imgs/app-light-full.png" alt="AI Workspace in light theme, sidebar expanded, a real local shell terminal open" /></td>
-<td width="50%"><img src="docs/imgs/app-dark-full.png" alt="AI Workspace in dark theme, sidebar expanded" /></td>
-</tr>
-<tr>
-<td width="50%"><img src="docs/imgs/app-dark-collapsed.png" alt="Sidebar collapsed to an icon-only rail" /></td>
-<td width="50%"><img src="docs/imgs/terminal-btop.png" alt="The real local shell terminal running btop" /></td>
-</tr>
-</table>
-
 Each provider is the real, unmodified site, isolated in its own session — sign in once and it's remembered, just like a real browser profile:
 
 <table>
@@ -47,6 +36,19 @@ Each provider is the real, unmodified site, isolated in its own session — sign
 <td width="25%"><img src="docs/imgs/provider-copilot.png" alt="GitHub Copilot" /></td>
 <td width="25%"><img src="docs/imgs/provider-mistral.png" alt="Mistral Le Chat" /></td>
 <td width="25%"><img src="docs/imgs/provider-notion.png" alt="Notion" /></td>
+</tr>
+</table>
+
+## Adaptable & focused
+
+<table>
+<tr>
+<td width="50%"><img src="docs/imgs/app-dark-full.png" alt="AI Workspace in dark theme, sidebar expanded" /></td>
+<td width="50%"><img src="docs/imgs/terminal-arctic.png" alt="Running another AI coding CLI tool in the built-in terminal, right alongside your web sessions" /></td>
+</tr>
+<tr>
+<td width="50%"><img src="docs/imgs/app-dark-collapsed.png" alt="Sidebar collapsed to an icon-only rail" /></td>
+<td width="50%"><img src="docs/imgs/terminal-btop.png" alt="The real local shell terminal running btop" /></td>
 </tr>
 </table>
 
