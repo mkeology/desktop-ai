@@ -37,7 +37,7 @@ Cutting a release is two steps, not one, because this repo requires every change
 | Platform | Format | Requirement |
 |---|---|---|
 | Windows | NSIS installer (`.exe`) | Per-user install by default (no admin prompt required); one-click through |
-| macOS | `.dmg` | Signed **and notarized** — no Gatekeeper "unidentified developer" warning; drag-to-Applications |
+| macOS | `.dmg`, both Apple Silicon (`arm64`) and Intel (`x64`) | Target: signed **and notarized** — no Gatekeeper warning; drag-to-Applications. **Currently unsigned** (see Signing & secrets below) — macOS shows a "damaged" false-positive that users work around with `xattr -cr`, documented in the [User Guide](./03-user-guide.md) |
 | Linux | `.AppImage` + `.deb` (and `.rpm` if demand appears) | AppImage needs no install step at all; deb/rpm for users who prefer a package manager |
 
 No installer should ever prompt for configuration, accounts, or license keys before the app opens.
@@ -57,7 +57,7 @@ No installer should ever prompt for configuration, accounts, or license keys bef
 
 ## Signing & secrets
 
-`release.yml` already expects these as optional GitHub Actions secrets (build stays functional, just unsigned, if absent — but **do not ship an unsigned release to users**):
+`release.yml` already expects these as optional GitHub Actions secrets (build stays functional, just unsigned, if absent). **Current state: these secrets are not configured, so every release so far ships unsigned** — accepted as an interim state (see [Security](./06-security.md)'s known gap and the `xattr -cr` workaround in the [User Guide](./03-user-guide.md)), not a target to leave in place long-term. Get these configured before recommending the app beyond early testers:
 
 | Secret | Purpose |
 |---|---|

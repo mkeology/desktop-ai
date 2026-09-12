@@ -59,10 +59,16 @@ Grab the installer for your OS from the [latest release](https://github.com/mkeo
 | Platform | What you download |
 |---|---|
 | **Windows** | `.exe` — double-click, click through the installer |
-| **macOS** | `.dmg` — drag into Applications |
+| **macOS** | `.dmg` — drag into Applications (Apple Silicon and Intel builds both published) |
 | **Linux** | `.AppImage` (make it executable and run) or `.deb` |
 
 No account or setup wizard — download, install, open. The app checks for updates automatically after that.
+
+**macOS: "'AI Workspace' is damaged and can't be opened"?** The app isn't code-signed/notarized yet (see [Security](docs/specs/06-security.md)), so Gatekeeper rejects it sight unseen — it's not actually damaged. Run this once after installing, then open normally:
+
+```sh
+xattr -cr "/Applications/AI Workspace.app"
+```
 
 Want to see what's new or what's coming? See the [Features & Changelog](docs/specs/02-features-and-changelog.md).
 
