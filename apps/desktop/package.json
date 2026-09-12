@@ -1,6 +1,6 @@
 {
   "name": "ai-workspace-desktop",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "AI Workspace — isolated multi-account AI provider sessions, unified API chat, and terminal sessions in one desktop workspace.",
   "main": "./out/main/index.js",
   "author": {
