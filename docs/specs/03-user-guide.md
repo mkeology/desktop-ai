@@ -13,7 +13,7 @@ No accounts, no setup wizard, no configuration screen. Download, run the install
 | Platform | What you do |
 |---|---|
 | **Windows** | Download the `.exe`, double-click, click through the installer. No admin password needed for a per-user install. |
-| **macOS** | Download the `.dmg`, drag **AI Workspace** into **Applications**, open it. Signed and notarized, so no "unidentified developer" warning. |
+| **macOS** | Download the `.dmg` (Apple Silicon and Intel both published), drag **AI Workspace** into **Applications**, open it. **Not signed/notarized yet** (see [Security](./06-security.md)), so macOS shows "'AI Workspace' is damaged and can't be opened" on first launch — it isn't actually damaged. Run `xattr -cr "/Applications/AI Workspace.app"` once, then open normally. |
 | **Linux** | Download the `.AppImage` (make it executable and run it) or the `.deb`/`.rpm` package for your distro. |
 
 That's the whole process. First launch opens straight to an empty workspace with an "Add provider" / "Add app" prompt — no login or account creation required to start using the app itself.

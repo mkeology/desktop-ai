@@ -43,7 +43,7 @@ These are non-negotiable — see [Agent Rules](./00-agent-rules.md) for how to t
 
 ### Updates & supply chain
 
-- Installers and auto-updates are code-signed (macOS notarized, Windows Authenticode) so the OS and the updater can verify integrity before installing — see [DevOps & Release](./07-devops-release.md).
+- Installers and auto-updates *should* be code-signed (macOS notarized, Windows Authenticode) so the OS and the updater can verify integrity before installing — see [DevOps & Release](./07-devops-release.md). **Known gap:** no signing certificate is configured yet, so releases currently ship unsigned; macOS users hit a Gatekeeper "damaged" false-positive as a result (documented workaround in the [User Guide](./03-user-guide.md)). Set this up before recommending the app beyond early testers.
 - Dependencies are kept patched; audit alerts (`npm audit`, Dependabot) are treated as real work, not noise.
 - No secrets or signing certificates are ever committed to the repo.
 

@@ -77,6 +77,11 @@ Format: [Keep a Changelog](https://keepachangelog.com/) style, [SemVer](https://
   AI Web Session, Web Apps, and API sessions (one per provider) and
   Terminal (one at a time).
 
+### Fixed
+- macOS releases now publish both an Apple Silicon (`arm64`) and an Intel
+  (`x64`) `.dmg`/`.zip` — previously only `arm64` was built, so the app
+  wouldn't run at all on an Intel Mac.
+
 ### Removed
 - The **API Sessions** section is temporarily off the sidebar and the
   **File** menu (no unified API chat exists yet — see
