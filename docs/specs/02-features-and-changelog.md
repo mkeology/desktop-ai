@@ -81,6 +81,9 @@ Format: [Keep a Changelog](https://keepachangelog.com/) style, [SemVer](https://
 - macOS releases now publish both an Apple Silicon (`arm64`) and an Intel
   (`x64`) `.dmg`/`.zip` — previously only `arm64` was built, so the app
   wouldn't run at all on an Intel Mac.
+- The Windows installer filename now includes a `-win` label (e.g.
+  `AI-Workspace-Setup-x.y.z-win.exe`), matching the OS-labeled `arm64`/
+  `x64` macOS filenames and the `amd64` Linux `.deb`.
 
 ### Removed
 - The **API Sessions** section is temporarily off the sidebar and the

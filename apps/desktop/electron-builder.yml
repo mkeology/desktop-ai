@@ -13,6 +13,10 @@ files:
 win:
   target: nsis
   icon: resources/icon.ico
+  # Hardcoded rather than built from ${productName} (which contains a
+  # space electron-builder's own sanitizer doesn't strip) so the filename
+  # is guaranteed byte-for-byte, matching the existing mac/linux artifacts.
+  artifactName: 'AI-Workspace-Setup-${version}-win.${ext}'
 
 nsis:
   oneClick: false
